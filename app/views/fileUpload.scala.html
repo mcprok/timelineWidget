@@ -13,9 +13,11 @@
 <script type="text/javascript">
 
     var prepareEventData = function(json) {
-        var resultData = {};
+
+        var resultData = [];
         var events = json.events;
-        for ( var i = 0 ; i < events.length() ; i++ ) {
+        console.log(events.length);
+        for ( var i = 0 ; i < events.length ; i++ ) {
             var event = {
                 id: i,
                 start: new Date(events[i].startTime),
@@ -24,11 +26,11 @@
                 location: events[i].location,
                 description: events[i].description,
                 geo: events[i].geo
-            }
+            };
             resultData.push(event)
         }
         return resultData;
-    }
+    };
 
     $(function (){
         $ ('#form').submit(function (e) {
@@ -43,10 +45,8 @@
                 contentType : false,
                 processData : false
             }).done ( function ( data ) {
-                console.log ( data ) ;
-
                 var container = $(".timeline")
-                var data = prepareEventData($.parseJSON(data));
+                var preparedData = prepareEventData($.parseJSON(data));
 
 
                 var options = {};
@@ -60,5 +60,4 @@
             });
         });
     });
-}) ;
 </script>
