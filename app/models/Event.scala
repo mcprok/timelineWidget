@@ -12,10 +12,10 @@ import org.joda.time.DateTime
  */
 case class Event(
   uid : String,
-  startTime : DateTime,
+  startTime : Long,
   summary : String,
   location : String,
-  endTime : Option[DateTime],
+  endTime : Option[Long],
   description : Option[String],
   geo : Option[(Double, Double)]
 )
