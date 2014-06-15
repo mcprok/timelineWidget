@@ -5,13 +5,39 @@
     </p>
 </form>
 
+<form id="addEventForm" role="form" sty>
+    <div class="form-group">
+        <label for="contentInput">Content</label>
+        <input type="text" class="form-control" id="contentInput" placeholder="Enter content/title">
+    </div>
+    <div class="form-group">
+        <label for="descriptionInput">Description</label>
+        <textarea type="text" class="form-control" id="descriptionInput" placeholder="Enter content/title"></textarea>
+    </div>
+    <div>
+        <label for="dateInput">Date and time</label>
+        <div class="input-append date" id="newEventDatePicker" data-date="12-02-2012" data-date-format="dd-mm-yyyy">
+            <input class="span2" size="16" type="text" value="12-02-2012">
+            <span class="add-on"><i class="glyphicon glyphicon-calendar"></i></span>
+        </div>
 
+        <div class="input-append bootstrap-timepicker">
+            <input id="newEventTimePicker" type="text" class="input-small">
+            <span class="add-on">
+                <span class="glyphicon glyphicon-time"></span>
+            </span>
+        </div>
+    </div>
+    <button type="submit">Dodaj nowy!</button>
+</form>
 
 <script type="text/javascript">
 
-    var prepareEventData = function(json) {
+    var visDataSet;
+    var timeline;
 
-        var resultData = [];
+    var prepareEventData = function (json, groupName ) {
+        var resultDataSet = new vis.DataSet();
         var events = json.events;
         for ( var i = 0 ; i < events.length ; i++ ) {
             var event = {
@@ -21,11 +47,12 @@
                 content: events[i].summary,
                 location: events[i].location,
                 description: events[i].description,
-                geo: events[i].geo
+                geo: events[i].geo,
+                group: groupName
             };
-            resultData.push(event)
+            resultDataSet.add(event)
         }
-        return resultData;
+        return resultDataSet;
     };
 
     $(function (){
@@ -41,11 +68,15 @@
                 processData : false
             }).done ( function ( data ) {
                 var container = $("#timeline")[0];
-                var preparedData = prepareEventData($.parseJSON(data));
+                var groupName = "g1";
+
+                var preparedData = prepareEventData($.parseJSON(data),groupName );
+                visDataSet = preparedData;
 
                 var options = {};
 
-                var timeline = new vis.Timeline(container, preparedData, options);
+                timeline = new vis.Timeline(container, preparedData, options);
+
                 $("#flashing" ).text("DONE!");
             }).fail ( function ( jqXHR, status, errorThrown ) {
                 console.log ( errorThrown ) ;
@@ -54,4 +85,28 @@
             });
         });
     });
+
+    $(function() {
+        $('#addEventForm' ).submit( function(e) {
+            e.preventDefault( );
+            console.log('dassadasdadssd')
+        });
+    });
+
+    var addNewEventToTimeLine = function(dataSet, event) {
+        dataSet.add(event);
+    }
+
+    $(function() {
+        $('#newEventTimePicker').timepicker({
+            showMeridian: false,
+            defaultTime: false
+        });
+
+        $('#newEventDatePicker').datepicker({
+            autoclose: true
+        });
+
+    });
+
 </script>
