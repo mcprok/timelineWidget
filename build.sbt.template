@@ -14,7 +14,7 @@ libraryDependencies += "com.fasterxml.jackson.module" % "jackson-module-scala_2.
 
 
 resolvers += (
-    "Local Maven Repository" at "file:\\\\C:\\Users\\Grzesiek\\.m2\\repository"
+    "Local Maven Repository" at "file:\\\\"
 )
 
 play.Project.playScalaSettings

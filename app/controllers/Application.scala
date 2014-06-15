@@ -7,15 +7,18 @@ import utils.ICalParser
 object Application extends Controller {
 
   def index = Action {
-    Ok(views.html.index("Your new application is ready."))
+    Redirect("/timeline")
   }
 
   def icalParser = Action {
     val icalParser = new ICalParser()
     val jsonString = icalParser.parseIcalFile("events.ical")
 
-
     Ok(jsonString)
+  }
+
+  def timeline = Action {
+    Ok(views.html.timeline("timeline"))
   }
 
 }
