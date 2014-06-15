@@ -28,13 +28,16 @@ class ICalParser {
     .withEndTime(new DateTime(iCalEvent.getDateEnd.getValue))
     .build
 
+    //TODO zainstalowac Elasticsearcha co by szybko indeksował i zwracał wydarzenia?
+    //muszę się rozeznać jak się ma usuwanie indeksów po każdym wyjściu z programu
+
     val mapper = new ObjectMapper()
     mapper.registerModule(DefaultScalaModule)
 
     val out = new StringWriter
     mapper.writeValue(out, event)
     val json = out.toString
-    println(json)
+    json
 
   }
 }

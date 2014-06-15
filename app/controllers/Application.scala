@@ -12,8 +12,10 @@ object Application extends Controller {
 
   def icalParser = Action {
     val icalParser = new ICalParser()
-    icalParser.parseIcalFile("events.ical")
-    Ok(views.html.index("Your new application is ready."))
+    val jsonString = icalParser.parseIcalFile("events.ical")
+
+
+    Ok(jsonString)
   }
 
 }
