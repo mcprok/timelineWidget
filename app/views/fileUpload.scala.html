@@ -5,12 +5,7 @@
     </p>
 </form>
 
-<div>
-    <h3 id=""></h3>
 
-    <div id="timeline"></div>
-
-</div>
 
 <script type="text/javascript">
 
@@ -36,7 +31,7 @@
     $(function (){
         $ ('#form').submit(function (e) {
             e.preventDefault( );
-            data = new FormData ($( '#form' ).get(0));
+            data = new FormData ($( '#form' )[0]);
             $.ajax({
                 type : 'POST',
                 url : 'http://localhost:9000/upload',
@@ -51,7 +46,7 @@
                 var options = {};
 
                 var timeline = new vis.Timeline(container, preparedData, options);
-
+                $("#flashing" ).text("DONE!");
             }).fail ( function ( jqXHR, status, errorThrown ) {
                 console.log ( errorThrown ) ;
                 console.log ( jqXHR.responseText ) ;
