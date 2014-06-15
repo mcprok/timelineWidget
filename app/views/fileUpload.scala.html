@@ -16,12 +16,12 @@
     </div>
     <div>
         <label for="dateInput">Date and time</label>
-        <div class="input-append date" id="newEventDatePicker" data-date="12-02-2012" data-date-format="dd-mm-yyyy">
+        <div class="input-append date" id="newEventDatePicker" data-date-format="dd-mm-yyyy">
             <input class="span2" size="16" type="text" value="12-02-2012">
             <span class="add-on"><i class="glyphicon glyphicon-calendar"></i></span>
         </div>
 
-        <div class="input-append bootstrap-timepicker">
+        <div class="input-append bootstrap-timepicker" >
             <input id="newEventTimePicker" type="text" class="input-small">
             <span class="add-on">
                 <span class="glyphicon glyphicon-time"></span>
@@ -36,7 +36,7 @@
     var visDataSet;
     var timeline;
 
-    var prepareEventData = function (json, groupName ) {
+    var prepareEventData = function (json) {
         var resultDataSet = new vis.DataSet();
         var events = json.events;
         for ( var i = 0 ; i < events.length ; i++ ) {
@@ -47,8 +47,7 @@
                 content: events[i].summary,
                 location: events[i].location,
                 description: events[i].description,
-                geo: events[i].geo,
-                group: groupName
+                geo: events[i].geo
             };
             resultDataSet.add(event)
         }
@@ -68,9 +67,8 @@
                 processData : false
             }).done ( function ( data ) {
                 var container = $("#timeline")[0];
-                var groupName = "g1";
 
-                var preparedData = prepareEventData($.parseJSON(data),groupName );
+                var preparedData = prepareEventData($.parseJSON(data));
                 visDataSet = preparedData;
 
                 var options = {};
@@ -87,26 +85,38 @@
     });
 
     $(function() {
-        $('#addEventForm' ).submit( function(e) {
+        $('#addEventForm').submit( function(e) {
             e.preventDefault( );
-            console.log('dassadasdadssd')
+            console.log('Adding new event:')
+            var newEventTime = $('#newEventTimePicker').data("timepicker").getTime( ).split(':');
+            var newEventTimeHours = parseInt(newEventTime[0]);
+            var newEventTimeMinutes = parseInt(newEventTime[1]);
+
+            var newEvent = {
+                id: 100000,
+                start: $('#newEventDatePicker').datepicker('getDate' ).set({ minute: newEventTimeMinutes, hours: newEventTimeHours}),
+                content: $('#contentInput' ).val(),
+                description: $('#descriptionInput' ).val()
+            };
+            console.log(newEvent)
+            addNewEventToTimeLine(visDataSet, newEvent)
         });
     });
 
     var addNewEventToTimeLine = function(dataSet, event) {
         dataSet.add(event);
-    }
+    };
 
     $(function() {
         $('#newEventTimePicker').timepicker({
-            showMeridian: false,
-            defaultTime: false
+            showMeridian: false
         });
 
         $('#newEventDatePicker').datepicker({
-            autoclose: true
+            autoclose: true,
+            weekStart: 1
         });
-
+        $('#newEventDatePicker').datepicker('setDate', new Date());
     });
 
 </script>
