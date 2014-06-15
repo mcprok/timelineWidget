@@ -28,6 +28,5 @@ object Application extends Controller {
     val icalParser = new ICalParser()
     val jsonString = icalParser.parseIcalFile(file)
     jsonString
-    Ok(jsonString)
   }
 }
