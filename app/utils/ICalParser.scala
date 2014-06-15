@@ -36,7 +36,8 @@ class ICalParser {
         .withGeo((iCalEvent.getGeo.getLatitude, iCalEvent.getGeo.getLongitude))
         .build
 
-      eventsArray.add(mapper.writeValueAsString(event))
+      val jsonString = mapper.writeValueAsString(event)
+      eventsArray.add(mapper.readTree(jsonString))
     })
     jsonRoot.put("name", file.getPath)
     jsonRoot.put("events", eventsArray)

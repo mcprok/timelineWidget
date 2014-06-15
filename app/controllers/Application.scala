@@ -13,12 +13,9 @@ object Application extends Controller {
 
   def upload = Action(parse.multipartFormData) { request =>
 
-    request.body.file("event").map { picture =>
-      import java.io.File
-      val file = new File(picture.filename)
-      println(icalParser(file))
+    request.body.file("event").map { event =>
+      val file = new File(event.filename)
       Ok(icalParser(file))
-
     }.getOrElse {
       Redirect(routes.Application.index).flashing(
         "error" -> "Missing file"

@@ -6,25 +6,25 @@
 </form>
 
 <script type="text/javascript">
-$(function (){
-    $ ('#form').submit(function (e) {
-        e.preventDefault( );
-        data = new FormData ($( '#form' ).get(0));
-        console.log ('Submitting');
-        $.ajax({
-            type : 'POST',
-            url : 'http://localhost:9000/upload',
-            data : data,
-            cache : false,
-            contentType : false,
-            processData : false
-        }).done ( function ( data ) {
+    $(function (){
+        $('#form').submit(function (e) {
+            e.preventDefault( );
+            data = new FormData ($( '#form' ).get(0));
+            console.log ('Submitting');
+            $.ajax({
+                type : 'POST',
+                url : 'http://localhost:9000/upload',
+                data : data,
+                cache : false,
+                contentType : false,
+                processData : false
+            }).done ( function ( data ) {
             console.log ( data ) ;
-        }).fail ( function ( jqXHR, status, errorThrown ) {
-            console.log ( errorThrown ) ;
-            console.log ( jqXHR.responseText ) ;
-            console.log ( jqXHR.status ) ;
+            }).fail ( function ( jqXHR, status, errorThrown ) {
+                console.log ( errorThrown ) ;
+                console.log ( jqXHR.responseText ) ;
+                console.log ( jqXHR.status ) ;
+            });
         });
     });
-}) ;
 </script>
