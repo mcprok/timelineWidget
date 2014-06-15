@@ -8,6 +8,8 @@
 <div>
     <h3 id=""></h3>
 
+    <div id="timeline"></div>
+
 </div>
 
 <script type="text/javascript">
@@ -16,13 +18,12 @@
 
         var resultData = [];
         var events = json.events;
-        console.log(events.length);
         for ( var i = 0 ; i < events.length ; i++ ) {
             var event = {
                 id: i,
                 start: new Date(events[i].startTime),
                 end: new Date(events[i].endTime),
-                title: events[i].summary,
+                content: events[i].summary,
                 location: events[i].location,
                 description: events[i].description,
                 geo: events[i].geo
@@ -36,7 +37,6 @@
         $ ('#form').submit(function (e) {
             e.preventDefault( );
             data = new FormData ($( '#form' ).get(0));
-            console.log ('Submitting');
             $.ajax({
                 type : 'POST',
                 url : 'http://localhost:9000/upload',
@@ -45,13 +45,12 @@
                 contentType : false,
                 processData : false
             }).done ( function ( data ) {
-                var container = $(".timeline")
+                var container = $("#timeline")[0];
                 var preparedData = prepareEventData($.parseJSON(data));
-
 
                 var options = {};
 
-                var timeline = new vis.Timeline(container, data, options);
+                var timeline = new vis.Timeline(container, preparedData, options);
 
             }).fail ( function ( jqXHR, status, errorThrown ) {
                 console.log ( errorThrown ) ;
