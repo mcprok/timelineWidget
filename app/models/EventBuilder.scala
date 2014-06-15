@@ -11,18 +11,18 @@ import org.joda.time.DateTime
  */
 object EventBuilder {
   class EventBuilder(uid: Option[String],
-                     startTime : Option[DateTime],
+                     startTime : Option[Long],
                      summary : Option[String],
                      location : Option[String],
-                     endTime : Option[DateTime],
+                     endTime : Option[Long],
                      description : Option[String],
                      geo : Option[(Double,Double)])
   {
     def withUid(uid:String) = new EventBuilder(Some(uid), startTime, summary, location, endTime, description, geo)
-    def withStartTime(startTime : DateTime) = new EventBuilder(uid, Some(startTime), summary, location, endTime, description, geo)
+    def withStartTime(startTime : Long) = new EventBuilder(uid, Some(startTime), summary, location, endTime, description, geo)
     def withSummary(summary : String) = new EventBuilder(uid, startTime, Some(summary), location, endTime, description, geo)
     def withLocation(location : String) = new EventBuilder(uid, startTime, summary, Some(location), endTime, description, geo)
-    def withEndTime(endTime : DateTime) = new EventBuilder(uid, startTime, summary, location, Some(endTime), description, geo)
+    def withEndTime(endTime : Long) = new EventBuilder(uid, startTime, summary, location, Some(endTime), description, geo)
     def withDescription(description : String) = new EventBuilder(uid, startTime, summary, location, endTime, Some(description), geo)
     def withGeo(geo : (Double, Double)) = new EventBuilder(uid, startTime, summary, location, endTime, description, Some(geo))
 

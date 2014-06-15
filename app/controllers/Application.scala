@@ -3,6 +3,7 @@ package controllers
 import play.api._
 import play.api.mvc._
 import utils.ICalParser
+import java.io.File
 
 object Application extends Controller {
 
@@ -10,12 +11,25 @@ object Application extends Controller {
     Ok(views.html.index("Your new application is ready."))
   }
 
-  def icalParser = Action {
+  def upload = Action(parse.multipartFormData) { request =>
+
+    request.body.file("event").map { picture =>
+      import java.io.File
+      val file = new File(picture.filename)
+      println(icalParser(file))
+      Ok(icalParser(file))
+
+    }.getOrElse {
+      Redirect(routes.Application.index).flashing(
+        "error" -> "Missing file"
+      )
+    }
+  }
+
+  private def icalParser(file : File) = {
     val icalParser = new ICalParser()
-    val jsonString = icalParser.parseIcalFile("events.ical")
-
-
-    Ok(jsonString)
+    val jsonString = icalParser.parseIcalFile(file)
+    jsonString
   }
 
 }

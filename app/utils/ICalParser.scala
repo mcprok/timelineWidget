@@ -8,36 +8,39 @@ import biweekly.Biweekly
 import models.EventBuilder
 import org.joda.time.DateTime
 import com.fasterxml.jackson.databind.ObjectMapper
-import play.api.libs.json.Json
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-
+import scala.collection.JavaConversions._
 
 class ICalParser {
-  def parseIcalFile(filePath : String) = {
-    val iCalList = Biweekly.parse(new File(filePath)).first()
 
-    val iCalEvent = iCalList.getEvents.get(0)
+  val mapper = new ObjectMapper()
+  mapper.registerModule(DefaultScalaModule)
 
-    val event = EventBuilder.builder
-      .withUid(iCalEvent.getUid.getValue.asInstanceOf[String])
-      .withStartTime(new DateTime(iCalEvent.getDateStart.getValue))
-    .withSummary(iCalEvent.getSummary.getValue)
-    .withDescription(iCalEvent.getDescription.getValue)
-    .withLocation(iCalEvent.getLocation.getValue)
-    .withGeo((iCalEvent.getGeo.getLatitude,iCalEvent.getGeo.getLongitude))
-    .withEndTime(new DateTime(iCalEvent.getDateEnd.getValue))
-    .build
+  def parseIcalFile(file : File) = {
+    val iCalList = Biweekly.parse(file).first()
 
-    //TODO zainstalowac Elasticsearcha co by szybko indeksował i zwracał wydarzenia?
-    //muszę się rozeznać jak się ma usuwanie indeksów po każdym wyjściu z programu
+    val iCalEvents = iCalList.getEvents
 
-    val mapper = new ObjectMapper()
-    mapper.registerModule(DefaultScalaModule)
+    var jsonRoot = mapper.createObjectNode
 
-    val out = new StringWriter
-    mapper.writeValue(out, event)
-    val json = out.toString
-    json
+    var eventsArray = mapper.createArrayNode()
 
+    iCalEvents.toList.foreach(iCalEvent => {
+      val event = EventBuilder.builder
+        .withUid(iCalEvent.getUid.getValue.asInstanceOf[String])
+        .withStartTime(new DateTime(iCalEvent.getDateStart.getValue).getMillis)
+        .withEndTime(new DateTime(iCalEvent.getDateEnd.getValue).getMillis)
+        .withSummary(iCalEvent.getSummary.getValue)
+        .withDescription(iCalEvent.getDescription.getValue)
+        .withLocation(iCalEvent.getLocation.getValue)
+        .withGeo((iCalEvent.getGeo.getLatitude, iCalEvent.getGeo.getLongitude))
+        .build
+
+      eventsArray.add(mapper.writeValueAsString(event))
+    })
+    jsonRoot.put("name", file.getPath)
+    jsonRoot.put("events", eventsArray)
+
+    jsonRoot.toString
   }
 }
