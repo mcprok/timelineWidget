@@ -15,20 +15,37 @@
         <textarea type="text" class="form-control" id="descriptionInput" placeholder="Enter content/title"></textarea>
     </div>
     <div>
-        <label for="dateInput">Date and time</label>
-        <div class="input-append date" id="newEventDatePicker" data-date-format="dd-mm-yyyy">
-            <input class="span2" size="16" type="text" value="12-02-2012">
+        <label for="dateInput">Event start date</label>
+        <div class="input-append date" id="newEventStartDate" data-date-format="dd-mm-yyyy">
+            <input class="span2" size="16" type="text">
             <span class="add-on"><i class="glyphicon glyphicon-calendar"></i></span>
         </div>
 
         <div class="input-append bootstrap-timepicker" >
-            <input id="newEventTimePicker" type="text" class="input-small">
+            <input id="newEventStartTime" type="text" class="input-small">
             <span class="add-on">
                 <span class="glyphicon glyphicon-time"></span>
             </span>
         </div>
     </div>
-    <button type="submit">Dodaj nowy!</button>
+    <div>
+        <input type="checkbox" id="newEventEndDateOn"/>
+        <label for="newEventEndDateDiv">Event end date</label>
+        <div id="newEventEndDateDiv">
+            <div class="input-append date" id="newEventEndDate" data-date-format="dd-mm-yyyy">
+                <input class="span2" size="16" type="text">
+                <span class="add-on"><i class="glyphicon glyphicon-calendar"></i></span>
+            </div>
+
+            <div class="input-append bootstrap-timepicker" >
+                <input id="newEventEndTime" type="text" class="input-small">
+                <span class="add-on">
+                    <span class="glyphicon glyphicon-time"></span>
+                </span>
+            </div>
+        </div>
+    </div>
+    <button type="submit">Dodaj nowy event!</button>
 </form>
 
 <script type="text/javascript">
@@ -84,39 +101,66 @@
         });
     });
 
+    var getDateFromInputs = function(datepickerId, timepickerId) {
+        var datepickerValue =  $('#'+datepickerId).datepicker('getDate');
+        var timepickerValue = $('#'+timepickerId).data("timepicker").getTime( ).split(':');
+        var newEventTimeHours = parseInt(timepickerValue[0]);
+        var newEventTimeMinutes = parseInt(timepickerValue[1]);
+        datepickerValue.set({ minute: newEventTimeMinutes, hour: newEventTimeHours});
+        return datepickerValue;
+    }
+
     $(function() {
         $('#addEventForm').submit( function(e) {
             e.preventDefault( );
             console.log('Adding new event:')
-            var newEventTime = $('#newEventTimePicker').data("timepicker").getTime( ).split(':');
-            var newEventTimeHours = parseInt(newEventTime[0]);
-            var newEventTimeMinutes = parseInt(newEventTime[1]);
+            var newEventStartDate = getDateFromInputs('newEventStartDate','newEventStartTime');
+            console.log(newEventStartDate)
 
             var newEvent = {
                 id: 100000,
-                start: $('#newEventDatePicker').datepicker('getDate' ).set({ minute: newEventTimeMinutes, hours: newEventTimeHours}),
-                content: $('#contentInput' ).val(),
-                description: $('#descriptionInput' ).val()
+                start: newEventStartDate,
+                content: $('#contentInput').val(),
+                description: $('#descriptionInput').val()
             };
+
+            if ($('#newEventEndDateOn').is(':checked')) {
+                newEvent.endTime = getDateFromInputs('newEventEndDate','newEventEndTime');
+            }
+
             console.log(newEvent)
-            addNewEventToTimeLine(visDataSet, newEvent)
+            addNewEventToTimeLineDataSet(visDataSet, newEvent)
         });
     });
 
-    var addNewEventToTimeLine = function(dataSet, event) {
+    var addNewEventToTimeLineDataSet = function(dataSet, event) {
         dataSet.add(event);
     };
 
     $(function() {
-        $('#newEventTimePicker').timepicker({
+        $('#newEventStartTime').timepicker({
             showMeridian: false
         });
 
-        $('#newEventDatePicker').datepicker({
+        $('#newEventStartDate').datepicker({
             autoclose: true,
             weekStart: 1
         });
-        $('#newEventDatePicker').datepicker('setDate', new Date());
+        $('#newEventStartDate').datepicker('setDate', new Date());
+    });
+
+    $(function() {
+        $('#newEventEndDateOn').change( function() {
+            var isChecked =  $(this).is(':checked');
+            if ( isChecked ) {
+                $('#newEventEndDateDiv').show();
+            } else {
+                $('#newEventEndDateDiv').hide();
+            }
+        });
+
+        $('#newEventEndDateDiv').hide();
+
     });
 
 </script>
