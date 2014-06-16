@@ -5,7 +5,7 @@
     </p>
 </form>
 
-<form id="addEventForm" role="form" sty>
+<form id="addEventForm" role="form" >
     <div class="form-group">
         <label for="contentInput">Content</label>
         <input type="text" class="form-control" id="contentInput" placeholder="Enter content/title">
@@ -15,34 +15,15 @@
         <textarea type="text" class="form-control" id="descriptionInput" placeholder="Enter content/title"></textarea>
     </div>
     <div>
-        <label for="dateInput">Event start date</label>
-        <div class="input-append date" id="newEventStartDate" data-date-format="dd-mm-yyyy">
-            <input class="span2" size="16" type="text">
-            <span class="add-on"><i class="glyphicon glyphicon-calendar"></i></span>
-        </div>
-
-        <div class="input-append bootstrap-timepicker" >
-            <input id="newEventStartTime" type="text" class="input-small">
-            <span class="add-on">
-                <span class="glyphicon glyphicon-time"></span>
-            </span>
-        </div>
+        @datepicker("newEventStartDate")
+        @timepicker("newEventStartTime")
     </div>
     <div>
         <input type="checkbox" id="newEventEndDateOn"/>
         <label for="newEventEndDateDiv">Event end date</label>
         <div id="newEventEndDateDiv">
-            <div class="input-append date" id="newEventEndDate" data-date-format="dd-mm-yyyy">
-                <input class="span2" size="16" type="text">
-                <span class="add-on"><i class="glyphicon glyphicon-calendar"></i></span>
-            </div>
-
-            <div class="input-append bootstrap-timepicker" >
-                <input id="newEventEndTime" type="text" class="input-small">
-                <span class="add-on">
-                    <span class="glyphicon glyphicon-time"></span>
-                </span>
-            </div>
+            @datepicker("newEventEndDate")
+            @timepicker("newEventEndTime")
         </div>
     </div>
     <button type="submit">Dodaj nowy event!</button>
@@ -89,7 +70,6 @@
                 visDataSet = preparedData;
 
                 var options = {};
-
                 timeline = new vis.Timeline(container, preparedData, options);
 
                 $("#flashing" ).text("DONE!");
@@ -125,7 +105,7 @@
             };
 
             if ($('#newEventEndDateOn').is(':checked')) {
-                newEvent.endTime = getDateFromInputs('newEventEndDate','newEventEndTime');
+                newEvent.end = getDateFromInputs('newEventEndDate','newEventEndTime');
             }
 
             console.log(newEvent)
@@ -138,15 +118,15 @@
     };
 
     $(function() {
-        $('#newEventStartTime').timepicker({
+        $('.timepicker').timepicker({
             showMeridian: false
         });
 
-        $('#newEventStartDate').datepicker({
+        $('.datepicker' ).datepicker({
             autoclose: true,
             weekStart: 1
         });
-        $('#newEventStartDate').datepicker('setDate', new Date());
+        $('.datepicker').datepicker('setDate', new Date());
     });
 
     $(function() {
@@ -158,9 +138,7 @@
                 $('#newEventEndDateDiv').hide();
             }
         });
-
         $('#newEventEndDateDiv').hide();
-
     });
 
 </script>
