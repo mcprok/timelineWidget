@@ -1,4 +1,4 @@
-<form id="form">
+<form id="eventsLoadingForm">
     <input type="file" name="event">
     <p>
         <input type="submit">
@@ -53,9 +53,9 @@
     };
 
     $(function (){
-        $ ('#form').submit(function (e) {
+        $ ('#eventsLoadingForm').submit(function (e) {
             e.preventDefault( );
-            data = new FormData ($( '#form' )[0]);
+            var data = new FormData ($(this)[0]);
             $.ajax({
                 type : 'POST',
                 url : 'http://localhost:9000/upload',
