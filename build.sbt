@@ -18,3 +18,6 @@ resolvers += (
 )
 
 play.Project.playScalaSettings
+
+requireJs += "newEventForm.js"
+requireJsShim += "newEventForm.js"

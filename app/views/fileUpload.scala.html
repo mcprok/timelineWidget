@@ -5,29 +5,7 @@
     </p>
 </form>
 
-<form id="addEventForm" role="form" >
-    <div class="form-group">
-        <label for="contentInput">Content</label>
-        <input type="text" class="form-control" id="contentInput" placeholder="Enter content/title">
-    </div>
-    <div class="form-group">
-        <label for="descriptionInput">Description</label>
-        <textarea type="text" class="form-control" id="descriptionInput" placeholder="Enter content/title"></textarea>
-    </div>
-    <div>
-        @datepicker("newEventStartDate")
-        @timepicker("newEventStartTime")
-    </div>
-    <div>
-        <input type="checkbox" id="newEventEndDateOn"/>
-        <label for="newEventEndDateDiv">Event end date</label>
-        <div id="newEventEndDateDiv">
-            @datepicker("newEventEndDate")
-            @timepicker("newEventEndTime")
-        </div>
-    </div>
-    <button type="submit">Dodaj nowy event!</button>
-</form>
+@helper.requireJs(core = routes.Assets.at("javascripts/require.js").url, module = routes.Assets.at("javascripts/forms/newEventForm").url)
 
 <script type="text/javascript">
 
@@ -81,41 +59,7 @@
         });
     });
 
-    var getDateFromInputs = function(datepickerId, timepickerId) {
-        var datepickerValue =  $('#'+datepickerId).datepicker('getDate');
-        var timepickerValue = $('#'+timepickerId).data("timepicker").getTime( ).split(':');
-        var newEventTimeHours = parseInt(timepickerValue[0]);
-        var newEventTimeMinutes = parseInt(timepickerValue[1]);
-        datepickerValue.set({ minute: newEventTimeMinutes, hour: newEventTimeHours});
-        return datepickerValue;
-    }
 
-    $(function() {
-        $('#addEventForm').submit( function(e) {
-            e.preventDefault( );
-            console.log('Adding new event:')
-            var newEventStartDate = getDateFromInputs('newEventStartDate','newEventStartTime');
-            console.log(newEventStartDate)
-
-            var newEvent = {
-                id: 100000,
-                start: newEventStartDate,
-                content: $('#contentInput').val(),
-                description: $('#descriptionInput').val()
-            };
-
-            if ($('#newEventEndDateOn').is(':checked')) {
-                newEvent.end = getDateFromInputs('newEventEndDate','newEventEndTime');
-            }
-
-            console.log(newEvent)
-            addNewEventToTimeLineDataSet(visDataSet, newEvent)
-        });
-    });
-
-    var addNewEventToTimeLineDataSet = function(dataSet, event) {
-        dataSet.add(event);
-    };
 
     $(function() {
         $('.timepicker').timepicker({

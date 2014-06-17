@@ -1,0 +1,56 @@
+<form id="addEventForm" role="form" >
+    <div class="form-group">
+        <label for="contentInput">Content</label>
+        <input type="text" class="form-control" id="contentInput" placeholder="Enter content/title">
+    </div>
+    <div class="form-group">
+        <label for="descriptionInput">Description</label>
+        <textarea type="text" class="form-control" id="descriptionInput" placeholder="Enter content/title"></textarea>
+    </div>
+    <div>
+        @datepicker("newEventStartDate")
+        @timepicker("newEventStartTime")
+    </div>
+    <div>
+        <input type="checkbox" id="newEventEndDateOn"/>
+        <label for="newEventEndDateDiv">Event end date</label>
+        <div id="newEventEndDateDiv">
+            @datepicker("newEventEndDate")
+            @timepicker("newEventEndTime")
+        </div>
+    </div>
+    <button type="submit">Dodaj nowy event!</button>
+</form>
+
+<script type="text/javascript">
+    $(function() {
+        require(['newEventForm'], function (newEventShow) {
+            console.log('LOADED')
+            $('#addEventForm').submit( function(e) {
+                e.preventDefault( );
+                console.log('Adding new event:')
+                var newEventStartDate = newEventShow.getDateFromInputs('newEventStartDate','newEventStartTime');
+                console.log(newEventStartDate)
+
+                var newEvent = {
+                id: 100000,
+                start: newEventStartDate,
+                content: $('#contentInput').val(),
+                description: $('#descriptionInput').val()
+                };
+
+                if ($('#newEventEndDateOn').is(':checked')) {
+                newEvent.end = newEventShow.getDateFromInputs('newEventEndDate','newEventEndTime');
+                }
+
+                console.log(newEvent)
+                addNewEventToTimeLineDataSet(visDataSet, newEvent)
+            });
+        });
+    });
+
+var addNewEventToTimeLineDataSet = function(dataSet, event) {
+dataSet.add(event);
+};
+
+</script>
