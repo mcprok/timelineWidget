@@ -3,7 +3,7 @@
 @main("Timeline") {
 
     @fileUpload()
-    @newEventForm("addEventForm")
+    @newEventForm()
 
     <div>
         <h3 id="flashing"></h3>
@@ -11,8 +11,6 @@
     </div>
 
     <script type="text/javascript">
-
-
         $(function() {
             require(['timeline/timelineService','forms/loadEventsForm','forms/newEventForm'], function(timelineService, loadEventsForm, newEventForm) {
 
@@ -32,7 +30,7 @@
                 };
 
                 loadEventsForm.attachForm(onNewEventLoadedSuccess);
-                newEventForm.addNewEventFormOnSubmit('addEventForm', onNewEventAdded);
+                newEventForm.addNewEventSubmitHandler(onNewEventAdded);
             });
         });
 

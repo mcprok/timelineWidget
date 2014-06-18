@@ -1,10 +1,7 @@
-define('forms/loadEventsForm', function () {
+define(function () {
 
-    console.log('loadEventsForm loaded')
-
-    var prepareEventData = function (json) {
-        var resultDataSet = []
-        var events = json.events;
+    var prepareEventData = function (events) {
+        var resultDataSet = [];
         for (var i = 0; i < events.length; i++) {
             var event = {
                 start: new Date(events[i].startTime),
@@ -22,7 +19,7 @@ define('forms/loadEventsForm', function () {
     var attachForm = function (successCallback, errorCallback) {
         $('#eventsLoadingForm').submit(function (e) {
             e.preventDefault();
-            var data = new FormData($(this)[0]);
+            var data = new FormData(e.currentTarget);
             $.ajax({
                 type: 'POST',
                 url: 'http://localhost:9000/upload',
@@ -32,12 +29,11 @@ define('forms/loadEventsForm', function () {
                 processData: false
             }).done(function (data) {
 
-                var preparedData = prepareEventData($.parseJSON(data));
+                var preparedData = prepareEventData($.parseJSON(data).events);
 
                 if (successCallback) {
                     successCallback(preparedData);
                 }
-
             }).fail(function (jqXHR, status, errorThrown) {
                 console.log(errorThrown);
                 console.log(jqXHR.responseText);
@@ -47,10 +43,9 @@ define('forms/loadEventsForm', function () {
                 }
             });
         });
-    }
+    };
 
     return {
         attachForm: attachForm
     };
-
 });

@@ -1,7 +1,5 @@
 define('timeline/timelineService', [], function() {
 
-    console.log('timelineService loaded');
-
     var timeline = null;
     var newEventId = 0;
 
@@ -28,7 +26,8 @@ define('timeline/timelineService', [], function() {
 
     return {
         createTimeline: createTimeline,
-        addNewEvent: addNewEvent
+        addNewEvent: addNewEvent,
+        getTimeline: getTimeline
     };
 
 });

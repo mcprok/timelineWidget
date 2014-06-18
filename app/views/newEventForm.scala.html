@@ -1,6 +1,4 @@
-@(addEventForm: String)
-
-<form id="@addEventForm" role="form" >
+<form id="addEventForm" role="form" >
     <div class="form-group">
         <label for="contentInput">Content</label>
         <input type="text" class="form-control" id="contentInput" placeholder="Enter content/title">
@@ -38,9 +36,8 @@
         });
         $('.datepicker').datepicker('setDate', new Date());
 
-        $('#newEventEndDateOn').change( function() {
-            var isChecked =  $(this).is(':checked');
-            if ( isChecked ) {
+        $('#newEventEndDateOn').change(function (event) {
+            if(event.currentTarget.checked) {
                 $('#newEventEndDateDiv').show();
             } else {
                 $('#newEventEndDateDiv').hide();

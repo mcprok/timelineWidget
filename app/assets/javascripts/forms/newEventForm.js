@@ -1,23 +1,22 @@
-define('forms/newEventForm', [], function() {
+define('forms/newEventForm', function () {
 
-    console.log('newEventForm loaded')
-
-    var getDateFromInputs = function(datepickerId, timepickerId) {
-        var datepickerValue =  $('#'+datepickerId).datepicker('getDate');
-        var timepickerValue = $('#'+timepickerId).data("timepicker").getTime( ).split(':');
+    var getDateFromInputs = function (datepickerId, timepickerId) {
+        var datepickerValue = $('#' + datepickerId).datepicker('getDate');
+        var timepickerValue = $('#' + timepickerId).data("timepicker").getTime().split(':');
         var newEventTimeHours = parseInt(timepickerValue[0]);
         var newEventTimeMinutes = parseInt(timepickerValue[1]);
-        datepickerValue.set({ minute: newEventTimeMinutes, hour: newEventTimeHours});
+        datepickerValue.set({
+            minute: newEventTimeMinutes,
+            hour: newEventTimeHours
+        });
         return datepickerValue;
     };
 
-    var addNewEventFormOnSubmit = function(formId, callback) {
-        $('#'+formId).submit( function(e) {
-            e.preventDefault( );
+    var addNewEventSubmitHandler = function (callback) {
+        $('#addEventForm').submit(function (e) {
+            e.preventDefault();
 
-            console.log('Adding new event:')
-            var newEventStartDate = getDateFromInputs('newEventStartDate','newEventStartTime');
-            console.log(newEventStartDate)
+            var newEventStartDate = getDateFromInputs('newEventStartDate', 'newEventStartTime');
 
             var newEvent = {
                 start: newEventStartDate,
@@ -25,17 +24,17 @@ define('forms/newEventForm', [], function() {
                 description: $('#descriptionInput').val()
             };
 
-            if ($('#newEventEndDateOn').is(':checked')) {
-                newEvent.end = getDateFromInputs('newEventEndDate','newEventEndTime');
+            if ($('#newEventEndDateOn').get(0).checked) {
+                newEvent.end = getDateFromInputs('newEventEndDate', 'newEventEndTime');
             }
 
-            if ( callback ) {
+            if (callback) {
                 callback(newEvent);
             }
         });
     }
     return {
-        addNewEventFormOnSubmit: addNewEventFormOnSubmit
+        addNewEventSubmitHandler: addNewEventSubmitHandler
     };
 
 });
