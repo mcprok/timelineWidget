@@ -7,57 +7,10 @@
 
 
 <script type="text/javascript">
-    $(function (){
-        require(['timeline/timelineService'], function (timelineService) {
-
-            var visDataSet;
-            var timeline;
-
-            var prepareEventData = function (json) {
-                var resultDataSet = new vis.DataSet();
-                var events = json.events;
-                for ( var i = 0 ; i < events.length ; i++ ) {
-                    var event = {
-                        start: new Date(events[i].startTime),
-                        end: new Date(events[i].endTime),
-                        content: events[i].summary,
-                        location: events[i].location,
-                        description: events[i].description,
-                        geo: events[i].geo
-                    };
-                    resultDataSet.add(event)
-                }
-                return resultDataSet;
-            };
-
-            $ ('#eventsLoadingForm').submit(function (e) {
-                e.preventDefault( );
-                var data = new FormData ($(this)[0]);
-                $.ajax({
-                    type : 'POST',
-                    url : 'http://localhost:9000/upload',
-                    data : data,
-                    cache : false,
-                    contentType : false,
-                    processData : false
-                }).done ( function ( data ) {
-                    var container = $("#timeline")[0];
-
-                    var preparedData = prepareEventData($.parseJSON(data));
-                    visDataSet = preparedData;
-
-                    var options = {};
-                    timeline = timelineService.createTimeline('timeline', preparedData, options);
-
-                    $("#flashing" ).text("DONE!");
-                }).fail ( function ( jqXHR, status, errorThrown ) {
-                    console.log ( errorThrown ) ;
-                    console.log ( jqXHR.responseText ) ;
-                    console.log ( jqXHR.status ) ;
-                });
-            });
-        });
-    });
+//    $(function (){
+//        require(['timeline/timelineService'], function (timelineService) {
+//        });
+//    });
 
 
 
