@@ -3,7 +3,7 @@ define('forms/loadEventsForm', function () {
     console.log('loadEventsForm loaded')
 
     var prepareEventData = function (json) {
-        var resultDataSet = new vis.DataSet();
+        var resultDataSet = []
         var events = json.events;
         for (var i = 0; i < events.length; i++) {
             var event = {
@@ -14,7 +14,7 @@ define('forms/loadEventsForm', function () {
                 description: events[i].description,
                 geo: events[i].geo
             };
-            resultDataSet.add(event)
+            resultDataSet.push(event)
         }
         return resultDataSet;
     };

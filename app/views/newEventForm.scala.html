@@ -27,10 +27,29 @@
 <script type="text/javascript">
     $(function() {
         require(['forms/newEventForm'], function (newEventForm) {
+
+            $('.timepicker').timepicker({
+                showMeridian: false
+            });
+
+            $('.datepicker' ).datepicker({
+                autoclose: true,
+                weekStart: 1
+            });
+            $('.datepicker').datepicker('setDate', new Date());
+
+            $('#newEventEndDateOn').change( function() {
+                var isChecked =  $(this).is(':checked');
+                if ( isChecked ) {
+                    $('#newEventEndDateDiv').show();
+                } else {
+                    $('#newEventEndDateDiv').hide();
+                }
+            });
+
+            $('#newEventEndDateDiv').hide();
+
             newEventForm.addNewEventFormOnSubmit('addEventForm');
         });
     });
-
-
-
 </script>

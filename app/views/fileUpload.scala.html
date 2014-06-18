@@ -14,28 +14,6 @@
 
 
 
-    $(function() {
-        $('.timepicker').timepicker({
-            showMeridian: false
-        });
 
-        $('.datepicker' ).datepicker({
-            autoclose: true,
-            weekStart: 1
-        });
-        $('.datepicker').datepicker('setDate', new Date());
-    });
-
-    $(function() {
-        $('#newEventEndDateOn').change( function() {
-            var isChecked =  $(this).is(':checked');
-            if ( isChecked ) {
-                $('#newEventEndDateDiv').show();
-            } else {
-                $('#newEventEndDateDiv').hide();
-            }
-        });
-        $('#newEventEndDateDiv').hide();
-    });
 
 </script>

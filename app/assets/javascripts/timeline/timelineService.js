@@ -8,7 +8,8 @@ define('timeline/timelineService', [], function() {
     var createTimeline = function(containerId, data, options) {
         var container = $('#'+containerId)[0];
 
-        timeline = new vis.Timeline(container, data, options);
+        timeline = new links.Timeline(container);
+        timeline.draw(data, options)
 
         newEventId = data.length;
 
