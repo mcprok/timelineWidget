@@ -3,7 +3,7 @@
 @main("Timeline") {
 
     @fileUpload()
-    @newEventForm()
+    @newEventForm("addEventForm")
 
     <div>
         <h3 id="flashing"></h3>
@@ -12,9 +12,11 @@
 
     <script type="text/javascript">
 
-        var timeline;
+
         $(function() {
-            require(['timeline/timelineService','forms/loadEventsForm'], function(timelineService, loadEventsForm) {
+            require(['timeline/timelineService','forms/loadEventsForm','forms/newEventForm'], function(timelineService, loadEventsForm, newEventForm) {
+
+                var timeline;
 
                 var onNewEventLoadedSuccess = function(data) {
                     var container = $("#timeline")[0];
@@ -25,10 +27,12 @@
                     $("#flashing" ).text("DONE!");
                 };
 
-                console.log('in INDEX')
-                console.log(timelineService)
-                console.log(loadEventsForm);
+                var onNewEventAdded = function(newEvent) {
+                    timelineService.addNewEvent(newEvent);
+                };
+
                 loadEventsForm.attachForm(onNewEventLoadedSuccess);
+                newEventForm.addNewEventFormOnSubmit('addEventForm', onNewEventAdded);
             });
         });
 

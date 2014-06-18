@@ -16,10 +16,10 @@ define('timeline/timelineService', [], function() {
         return timeline;
     }
 
-    var addEventToTimeline = function(event) {
+    var addNewEvent = function(event) {
         event.id = newEventId;
         newEventId++;
-//        timeline.addItem(event); // TODO aply when changed to links
+        timeline.addItem(event);
     }
 
     var getTimeline = function() {
@@ -28,7 +28,7 @@ define('timeline/timelineService', [], function() {
 
     return {
         createTimeline: createTimeline,
-        addEventToTimeline: addEventToTimeline
+        addNewEvent: addNewEvent
     };
 
 });

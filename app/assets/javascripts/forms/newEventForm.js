@@ -11,11 +11,7 @@ define('forms/newEventForm', [], function() {
         return datepickerValue;
     };
 
-    var addNewEventToTimeLineDataSet = function(dataSet, event) {
-        dataSet.add(event);
-    };
-
-    var addNewEventFormOnSubmit = function(formId) {
+    var addNewEventFormOnSubmit = function(formId, callback) {
         $('#'+formId).submit( function(e) {
             e.preventDefault( );
 
@@ -24,7 +20,6 @@ define('forms/newEventForm', [], function() {
             console.log(newEventStartDate)
 
             var newEvent = {
-                id: 100000,
                 start: newEventStartDate,
                 content: $('#contentInput').val(),
                 description: $('#descriptionInput').val()
@@ -34,8 +29,9 @@ define('forms/newEventForm', [], function() {
                 newEvent.end = getDateFromInputs('newEventEndDate','newEventEndTime');
             }
 
-            console.log(newEvent)
-            addNewEventToTimeLineDataSet(visDataSet, newEvent)
+            if ( callback ) {
+                callback(newEvent);
+            }
         });
     }
     return {
