@@ -22,35 +22,15 @@
     <button type="submit">Dodaj nowy event!</button>
 </form>
 
+
+
 <script type="text/javascript">
     $(function() {
-        require(['newEventForm'], function (newEventShow) {
-            console.log('LOADED')
-            $('#addEventForm').submit( function(e) {
-                e.preventDefault( );
-                console.log('Adding new event:')
-                var newEventStartDate = newEventShow.getDateFromInputs('newEventStartDate','newEventStartTime');
-                console.log(newEventStartDate)
-
-                var newEvent = {
-                id: 100000,
-                start: newEventStartDate,
-                content: $('#contentInput').val(),
-                description: $('#descriptionInput').val()
-                };
-
-                if ($('#newEventEndDateOn').is(':checked')) {
-                newEvent.end = newEventShow.getDateFromInputs('newEventEndDate','newEventEndTime');
-                }
-
-                console.log(newEvent)
-                addNewEventToTimeLineDataSet(visDataSet, newEvent)
-            });
+        require(['forms/newEventForm'], function (newEventForm) {
+            newEventForm.addNewEventFormOnSubmit('addEventForm');
         });
     });
 
-var addNewEventToTimeLineDataSet = function(dataSet, event) {
-dataSet.add(event);
-};
+
 
 </script>

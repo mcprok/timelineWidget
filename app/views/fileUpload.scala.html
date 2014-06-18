@@ -5,56 +5,56 @@
     </p>
 </form>
 
-@helper.requireJs(core = routes.Assets.at("javascripts/require.js").url, module = routes.Assets.at("javascripts/forms/newEventForm").url)
 
 <script type="text/javascript">
-
-    var visDataSet;
-    var timeline;
-
-    var prepareEventData = function (json) {
-        var resultDataSet = new vis.DataSet();
-        var events = json.events;
-        for ( var i = 0 ; i < events.length ; i++ ) {
-            var event = {
-                id: i,
-                start: new Date(events[i].startTime),
-                end: new Date(events[i].endTime),
-                content: events[i].summary,
-                location: events[i].location,
-                description: events[i].description,
-                geo: events[i].geo
-            };
-            resultDataSet.add(event)
-        }
-        return resultDataSet;
-    };
-
     $(function (){
-        $ ('#eventsLoadingForm').submit(function (e) {
-            e.preventDefault( );
-            var data = new FormData ($(this)[0]);
-            $.ajax({
-                type : 'POST',
-                url : 'http://localhost:9000/upload',
-                data : data,
-                cache : false,
-                contentType : false,
-                processData : false
-            }).done ( function ( data ) {
-                var container = $("#timeline")[0];
+        require(['timeline/timelineService'], function (timelineService) {
 
-                var preparedData = prepareEventData($.parseJSON(data));
-                visDataSet = preparedData;
+            var visDataSet;
+            var timeline;
 
-                var options = {};
-                timeline = new vis.Timeline(container, preparedData, options);
+            var prepareEventData = function (json) {
+                var resultDataSet = new vis.DataSet();
+                var events = json.events;
+                for ( var i = 0 ; i < events.length ; i++ ) {
+                    var event = {
+                        start: new Date(events[i].startTime),
+                        end: new Date(events[i].endTime),
+                        content: events[i].summary,
+                        location: events[i].location,
+                        description: events[i].description,
+                        geo: events[i].geo
+                    };
+                    resultDataSet.add(event)
+                }
+                return resultDataSet;
+            };
 
-                $("#flashing" ).text("DONE!");
-            }).fail ( function ( jqXHR, status, errorThrown ) {
-                console.log ( errorThrown ) ;
-                console.log ( jqXHR.responseText ) ;
-                console.log ( jqXHR.status ) ;
+            $ ('#eventsLoadingForm').submit(function (e) {
+                e.preventDefault( );
+                var data = new FormData ($(this)[0]);
+                $.ajax({
+                    type : 'POST',
+                    url : 'http://localhost:9000/upload',
+                    data : data,
+                    cache : false,
+                    contentType : false,
+                    processData : false
+                }).done ( function ( data ) {
+                    var container = $("#timeline")[0];
+
+                    var preparedData = prepareEventData($.parseJSON(data));
+                    visDataSet = preparedData;
+
+                    var options = {};
+                    timeline = timelineService.createTimeline('timeline', preparedData, options);
+
+                    $("#flashing" ).text("DONE!");
+                }).fail ( function ( jqXHR, status, errorThrown ) {
+                    console.log ( errorThrown ) ;
+                    console.log ( jqXHR.responseText ) ;
+                    console.log ( jqXHR.status ) ;
+                });
             });
         });
     });
