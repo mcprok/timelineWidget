@@ -1,4 +1,4 @@
-<form id="form">
+<form id="eventsLoadingForm">
     <input type="file" name="event">
     <p>
         <input type="submit">
@@ -6,52 +6,5 @@
 </form>
 
 
-
 <script type="text/javascript">
-
-    var prepareEventData = function(json) {
-
-        var resultData = [];
-        var events = json.events;
-        for ( var i = 0 ; i < events.length ; i++ ) {
-            var event = {
-                id: i,
-                start: new Date(events[i].startTime),
-                end: new Date(events[i].endTime),
-                content: events[i].summary,
-                location: events[i].location,
-                description: events[i].description,
-                geo: events[i].geo
-            };
-            resultData.push(event)
-        }
-        return resultData;
-    };
-
-    $(function (){
-        $ ('#form').submit(function (e) {
-            e.preventDefault( );
-            data = new FormData ($( '#form' )[0]);
-            $.ajax({
-                type : 'POST',
-                url : 'http://localhost:9000/upload',
-                data : data,
-                cache : false,
-                contentType : false,
-                processData : false
-            }).done ( function ( data ) {
-                var container = $("#timeline")[0];
-                var preparedData = prepareEventData($.parseJSON(data));
-
-                var options = {};
-
-                var timeline = new vis.Timeline(container, preparedData, options);
-                $("#flashing" ).text("DONE!");
-            }).fail ( function ( jqXHR, status, errorThrown ) {
-                console.log ( errorThrown ) ;
-                console.log ( jqXHR.responseText ) ;
-                console.log ( jqXHR.status ) ;
-            });
-        });
-    });
 </script>

@@ -1,13 +1,39 @@
 @(message: String)
 
-@main("Welcome to Play") {
+@main("Timeline") {
 
     @fileUpload()
+    @newEventForm()
+
     <div>
         <h3 id="flashing"></h3>
-
         <div id="timeline"></div>
-
     </div>
 
+    <script type="text/javascript">
+        $(function() {
+            require(['timeline/timelineService','forms/loadEventsForm','forms/newEventForm'], function(timelineService, loadEventsForm, newEventForm) {
+
+                var timeline;
+
+                var onNewEventLoadedSuccess = function(data) {
+
+                    var options = {};
+                    timeline = timelineService.createTimeline('timeline', data, options);
+
+                    $("#flashing" ).text("DONE!");
+
+                    newEventForm.show();
+                };
+
+                var onNewEventAdded = function(newEvent) {
+                    timelineService.addNewEvent(newEvent);
+                };
+
+                loadEventsForm.loadEventsHandler(onNewEventLoadedSuccess);
+                newEventForm.addNewEventSubmitHandler(onNewEventAdded);
+            });
+        });
+
+    </script>
 }
