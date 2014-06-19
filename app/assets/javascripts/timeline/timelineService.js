@@ -1,4 +1,4 @@
-define('timeline/timelineService', [], function() {
+define('timeline/timelineService',[], function() {
 
     var timeline = null;
     var newEventId = 0;
@@ -7,22 +7,22 @@ define('timeline/timelineService', [], function() {
         var container = $('#'+containerId)[0];
 
         timeline = new links.Timeline(container);
-        timeline.draw(data, options)
+        timeline.draw(data, options);
 
         newEventId = data.length;
 
         return timeline;
-    }
+    };
 
     var addNewEvent = function(event) {
         event.id = newEventId;
         newEventId++;
         timeline.addItem(event);
-    }
+    };
 
     var getTimeline = function() {
         return timeline;
-    }
+    };
 
     return {
         createTimeline: createTimeline,
