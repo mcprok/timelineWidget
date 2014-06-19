@@ -13,7 +13,7 @@ define('forms/newEventForm', function () {
     };
 
     var addNewEventSubmitHandler = function (callback) {
-        $('#addEventForm').submit(function (e) {
+        $('#addEventForm').on('submit', function (e) {
             e.preventDefault();
 
             var newEventStartDate = getDateFromInputs('newEventStartDate', 'newEventStartTime');
@@ -32,9 +32,20 @@ define('forms/newEventForm', function () {
                 callback(newEvent);
             }
         });
-    }
+    };
+
+    var show = function () {
+        $('#addEventForm').show();
+    };
+
+    var hide = function () {
+        $('#addEventForm').hide();
+    };
+
     return {
-        addNewEventSubmitHandler: addNewEventSubmitHandler
+        addNewEventSubmitHandler: addNewEventSubmitHandler,
+        show: show,
+        hide: hide
     };
 
 });

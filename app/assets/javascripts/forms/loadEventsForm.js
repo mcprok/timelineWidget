@@ -1,4 +1,4 @@
-define(function () {
+define('forms/loadEventsForm', function () {
 
     var prepareEventData = function (events) {
         var resultDataSet = [];
@@ -16,8 +16,8 @@ define(function () {
         return resultDataSet;
     };
 
-    var attachForm = function (successCallback, errorCallback) {
-        $('#eventsLoadingForm').submit(function (e) {
+    var loadEventsHandler = function (successCallback, errorCallback) {
+        $('#eventsLoadingForm').on('submit', function (e) {
             e.preventDefault();
             var data = new FormData(e.currentTarget);
             $.ajax({
@@ -46,6 +46,6 @@ define(function () {
     };
 
     return {
-        attachForm: attachForm
+        loadEventsHandler: loadEventsHandler
     };
 });

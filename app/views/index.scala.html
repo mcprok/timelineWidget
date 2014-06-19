@@ -17,19 +17,20 @@
                 var timeline;
 
                 var onNewEventLoadedSuccess = function(data) {
-                    var container = $("#timeline")[0];
 
                     var options = {};
                     timeline = timelineService.createTimeline('timeline', data, options);
 
                     $("#flashing" ).text("DONE!");
+
+                    newEventForm.show();
                 };
 
                 var onNewEventAdded = function(newEvent) {
                     timelineService.addNewEvent(newEvent);
                 };
 
-                loadEventsForm.attachForm(onNewEventLoadedSuccess);
+                loadEventsForm.loadEventsHandler(onNewEventLoadedSuccess);
                 newEventForm.addNewEventSubmitHandler(onNewEventAdded);
             });
         });
