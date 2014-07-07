@@ -13,7 +13,7 @@ define('timeline/timelineService',['alerts/alertsService'], function(alertsServi
 
         //listeners
         links.events.addListener(timeline, 'delete', onEventDelete);
-        alertsService.publishAlert('Timeline created!','info');
+        alertsService.publishInfoAlert('Timeline created!');
 
         return timeline;
     };
@@ -22,23 +22,16 @@ define('timeline/timelineService',['alerts/alertsService'], function(alertsServi
         event.id = newEventId;
         newEventId++;
         timeline.addItem(event);
-        alertsService.publishAlert('Event created: '+event.content +' on '+ event.start,'success');
+        alertsService.publishSuccessAlert('Event created: '+event.content +' on '+ event.start);
     };
 
     var getTimeline = function() {
         return timeline;
     };
 
-    var onEventDelete = function(newEvent) {
-        console.log('selectedROw:')
-        console.log(timeline);
-        console.log('onEventDelete');
-        console.log(newEvent);
-        console.log(timeline.getSelection()[0].row)
-//        for ( var i = 0 ; i< timeline.getData().length ; i++) {
-//            console.log(timeline.getData()[i])
-//        }
-        console.log(timeline.getItem(timeline.getSelection()[0].row));
+    var onEventDelete = function() {
+        var deletedEvent = timeline.getItem(timeline.getSelection()[0].row)
+        alertsService.publishInfoAlert('Event deleted: '+deletedEvent.content);
     };
 
     return {
