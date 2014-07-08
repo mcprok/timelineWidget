@@ -4,6 +4,7 @@ define('timeline/timelineService',['alerts/alertsService'], function(alertsServi
     var newEventId = 0;
 
     var createTimeline = function(containerId, data, options) {
+
         var container = $('#'+containerId)[0];
 
         timeline = new links.Timeline(container);
@@ -11,7 +12,6 @@ define('timeline/timelineService',['alerts/alertsService'], function(alertsServi
 
         newEventId = data.length;
 
-        //listeners
         links.events.addListener(timeline, 'delete', onEventDelete);
         alertsService.publishInfoAlert('Timeline created!');
 
@@ -19,8 +19,8 @@ define('timeline/timelineService',['alerts/alertsService'], function(alertsServi
     };
 
     var addNewEvent = function(event) {
-        event.id = newEventId;
-        newEventId++;
+
+        event.id = newEventId++;
         timeline.addItem(event);
         alertsService.publishSuccessAlert('Event created: '+event.content +' on '+ event.start);
     };
