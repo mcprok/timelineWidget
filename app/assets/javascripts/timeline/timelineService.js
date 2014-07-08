@@ -1,11 +1,11 @@
-define('timeline/timelineService',['alerts/alertsService'], function(alertsService) {
+define('timeline/timelineService', ['alerts/alertsService'], function (alertsService) {
 
     var timeline = null;
     var newEventId = 0;
 
-    var createTimeline = function(containerId, data, options) {
+    var createTimeline = function (containerId, data, options) {
 
-        var container = $('#'+containerId)[0];
+        var container = $('#' + containerId)[0];
 
         timeline = new links.Timeline(container);
         timeline.draw(data, options);
@@ -18,20 +18,20 @@ define('timeline/timelineService',['alerts/alertsService'], function(alertsServi
         return timeline;
     };
 
-    var addNewEvent = function(event) {
+    var addNewEvent = function (event) {
 
         event.id = newEventId++;
         timeline.addItem(event);
-        alertsService.publishSuccessAlert('Event created: '+event.content +' on '+ event.start);
+        alertsService.publishSuccessAlert('Event created: ' + event.content + ' on ' + event.start);
     };
 
-    var getTimeline = function() {
+    var getTimeline = function () {
         return timeline;
     };
 
-    var onEventDelete = function() {
+    var onEventDelete = function () {
         var deletedEvent = timeline.getItem(timeline.getSelection()[0].row)
-        alertsService.publishInfoAlert('Event deleted: '+deletedEvent.content);
+        alertsService.publishInfoAlert('Event deleted: ' + deletedEvent.content);
     };
 
     return {
