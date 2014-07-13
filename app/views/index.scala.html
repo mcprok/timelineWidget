@@ -2,6 +2,7 @@
 
 @main("Timeline") {
 
+    @alerts()
     @fileUpload()
     @newEventForm()
 
@@ -18,10 +19,10 @@
 
                 var onNewEventLoadedSuccess = function(data) {
 
-                    var options = {};
+                    var options = {
+                        editable: true
+                    };
                     timeline = timelineService.createTimeline('timeline', data, options);
-
-                    $("#flashing" ).text("DONE!");
 
                     newEventForm.show();
                 };
