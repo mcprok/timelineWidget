@@ -1,6 +1,14 @@
-define('alerts/alertsService', function () {
+define(function () {
 
-    var alertTemplate = require('tpl!javascripts/templates/alert');
+    var alertTemplate = '<div class="alert alert-<%= alertType %> alert-dismissible" role="alert">'+
+        '<button type="button" class="close" data-dismiss="alert">' +
+        '<span aria-hidden="true">&times;</span>' +
+        '<span class="sr-only">Close</span>' +
+        '</button>' +
+        '<%= content %>' +
+        '</div>';
+
+
     var newHtmlAlert = function (content, type) {
         var alertType;
         if (type === null) {
@@ -10,6 +18,7 @@ define('alerts/alertsService', function () {
         }
 
         var alert = _.template(alertTemplate);
+
         return alert({
             content: content,
             alertType: alertType

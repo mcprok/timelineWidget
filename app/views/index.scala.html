@@ -20,7 +20,10 @@
                 var onNewEventLoadedSuccess = function(data) {
 
                     var options = {
-                        editable: true
+                        editable: true,
+                        'width':  '100%',
+                        'height': '300px',
+                        'cluster': true
                     };
                     timeline = timelineService.createTimeline('timeline', data, options);
 
