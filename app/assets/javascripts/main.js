@@ -1,5 +1,8 @@
 requirejs.config({
 
-    baseUrl: '/assets/javascripts'
+    baseUrl: '/assets/javascripts/',
+    paths: {
+        tpl: 'tpl'
+    }
 
 });

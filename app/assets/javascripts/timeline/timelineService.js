@@ -1,4 +1,5 @@
-define('timeline/timelineService', ['alerts/alertsService'], function (alertsService) {
+define('timeline/timelineService',function (require) {
+    var alertsService = require('alerts/alertsService');
 
     var timeline = null;
     var newEventId = 0;
