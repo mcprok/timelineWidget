@@ -31,8 +31,9 @@ define('forms/loadEventsForm', function () {
 
                 var preparedData = prepareEventData($.parseJSON(data).events);
 
+                var group = $('#fileUploadGroup').val();
                 if (successCallback) {
-                    successCallback(preparedData);
+                    successCallback(preparedData, group);
                 }
             }).fail(function (jqXHR, status, errorThrown) {
                 console.log(errorThrown);

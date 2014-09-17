@@ -6,13 +6,16 @@ define('timeline/timelineService',function (require) {
     var newEventId = 0;
 
     var createTimeline = function (containerId, data, options) {
-
         var container = $('#' + containerId)[0];
+        if ( timeline == null) {
+            timeline = new links.Timeline(container);
+            timeline.draw(data, options);
+        } else {
+            timeline.addItems(data);
+            timeline.redraw();
+        }
 
-        timeline = new links.Timeline(container);
-        timeline.draw(data, options);
-
-        newEventId = data.length;
+        newEventId += data.length;
 
         links.events.addListener(timeline, 'delete', onEventDelete);
         alertsService.publishInfoAlert('Timeline created!');
@@ -25,7 +28,6 @@ define('timeline/timelineService',function (require) {
     };
 
     var addNewEvent = function (event) {
-
         event.id = newEventId++;
         timeline.addItem(event);
         alertsService.publishSuccessAlert('Event created: ' + event.content + ' on ' + event.start);
@@ -36,7 +38,7 @@ define('timeline/timelineService',function (require) {
     };
 
     var onEventDelete = function () {
-        var deletedEvent = timeline.getItem(timeline.getSelection()[0].row)
+        var deletedEvent = timeline.getItem(timeline.getSelection()[0].row);
         alertsService.publishInfoAlert('Event deleted: ' + deletedEvent.content);
     };
 
@@ -47,11 +49,28 @@ define('timeline/timelineService',function (require) {
         links.events.addListener(timeline, type, callback);
     };
 
+    var canCreateGroup = function(groupName) {
+        return !groupExists(groupName);
+    };
+
+    var groupExists = function( groupName) {
+        if ( timeline == null) {
+            return false;
+        } else {
+            return timeline.groups.some(function (group) {
+                if (group.content === groupName) {
+                    return true;
+                }
+            });
+        }
+    };
+
     return {
         createTimeline: createTimeline,
         addNewEvent: addNewEvent,
         getTimeline: getTimeline,
-        addEventHandler: addEventHandler
+        addEventHandler: addEventHandler,
+        canCreateGroup: canCreateGroup
     };
 
 });

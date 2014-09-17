@@ -17,13 +17,25 @@
 
                 var timeline;
 
-                var onNewEventLoadedSuccess = function(data) {
+                var onNewEventLoadedSuccess = function(data, groupName) {
+                    if ( !timelineService.canCreateGroup(groupName) ) {
+                        console.error('Cannot create a group - already exists: '+ groupName);
+                        return;
+                    }
+
+                    data.forEach(function(event) {
+                        event.group = groupName;
+                    });
 
                     var options = {
                         editable: true,
                         'width':  '100%',
-                        'height': '300px',
-                        'cluster': true
+                        'cluster': true,
+                        showMajorLabels: false,
+                        axisOnTop: false,
+                        groupsChangeable: true,
+                        groupMinHeight: 150,
+                        groupsOnRight: false
                     };
                     timeline = timelineService.createTimeline('timeline', data, options);
 
