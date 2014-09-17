@@ -1,5 +1,6 @@
 define('timeline/timelineService',function (require) {
     var alertsService = require('alerts/alertsService');
+    var selectionService = require('timeline/selectionService');
 
     var timeline = null;
     var newEventId = 0;
@@ -15,6 +16,10 @@ define('timeline/timelineService',function (require) {
 
         links.events.addListener(timeline, 'delete', onEventDelete);
         alertsService.publishInfoAlert('Timeline created!');
+
+        links.events.addListener(timeline, 'select',function() {
+            selectionService.selectCallback(timeline)
+        });
 
         return timeline;
     };
@@ -35,10 +40,18 @@ define('timeline/timelineService',function (require) {
         alertsService.publishInfoAlert('Event deleted: ' + deletedEvent.content);
     };
 
+    var addEventHandler = function(type, callback) {
+        if (timeline == null || type == null || type.length > 0 ) {
+            console.error('Cannot add on selection handler - no timeline or data provided');
+        }
+        links.events.addListener(timeline, type, callback);
+    };
+
     return {
         createTimeline: createTimeline,
         addNewEvent: addNewEvent,
-        getTimeline: getTimeline
+        getTimeline: getTimeline,
+        addEventHandler: addEventHandler
     };
 
 });
