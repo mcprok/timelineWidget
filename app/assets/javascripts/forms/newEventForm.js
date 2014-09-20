@@ -18,10 +18,13 @@ define('forms/newEventForm', function () {
 
             var newEventStartDate = getDateFromInputs('newEventStartDate', 'newEventStartTime');
 
+            var selectedGroup = $("#groupSelect").find("option:selected").html();
+
             var newEvent = {
                 start: newEventStartDate,
                 content: $('#contentInput').val(),
-                description: $('#descriptionInput').val()
+                description: $('#descriptionInput').val(),
+                group: selectedGroup
             };
 
             if ($('#newEventEndDateOn').get(0).checked) {
@@ -42,10 +45,18 @@ define('forms/newEventForm', function () {
         $('#addEventForm').hide();
     };
 
+    var updateGroups = function(newGroups) {
+        $("#groupSelect").html("");
+        $(newGroups).each(function (i) {
+            $("#groupSelect").append("<option value=\""+newGroups[i].value+"\">"+newGroups[i].content+"</option>");
+        });
+    };
+
     return {
         addNewEventSubmitHandler: addNewEventSubmitHandler,
         show: show,
-        hide: hide
+        hide: hide,
+        updateGroups: updateGroups
     };
 
 });

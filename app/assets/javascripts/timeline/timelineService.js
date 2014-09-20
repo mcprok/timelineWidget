@@ -1,6 +1,7 @@
 define('timeline/timelineService',function (require) {
     var alertsService = require('alerts/alertsService');
     var selectionService = require('timeline/selectionService');
+    var newEventService = require('forms/newEventForm');
 
     var timeline = null;
     var newEventId = 0;
@@ -23,6 +24,8 @@ define('timeline/timelineService',function (require) {
         links.events.addListener(timeline, 'select',function() {
             selectionService.selectCallback(timeline)
         });
+
+        newEventService.updateGroups(timeline.groups);
 
         return timeline;
     };
