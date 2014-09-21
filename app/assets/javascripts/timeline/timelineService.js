@@ -2,6 +2,7 @@ define('timeline/timelineService',function (require) {
     var alertsService = require('alerts/alertsService');
     var selectionService = require('timeline/selectionService');
     var newEventService = require('forms/newEventForm');
+    var searchService = require('timeline/searchService');
 
     var timeline = null;
     var newEventId = 0;
@@ -68,12 +69,17 @@ define('timeline/timelineService',function (require) {
         }
     };
 
+    var search =  function(searchString) {
+        searchService.search(searchString, timeline.items);
+    };
+
     return {
         createTimeline: createTimeline,
         addNewEvent: addNewEvent,
         getTimeline: getTimeline,
         addEventHandler: addEventHandler,
-        canCreateGroup: canCreateGroup
+        canCreateGroup: canCreateGroup,
+        search: search
     };
 
 });

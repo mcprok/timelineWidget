@@ -5,6 +5,7 @@
     @alerts()
     @fileUpload()
     @newEventForm()
+    @searchForm()
 
     <div>
         <h3 id="flashing"></h3>
@@ -13,7 +14,7 @@
 
     <script type="text/javascript">
         $(function() {
-            require(['timeline/timelineService','forms/loadEventsForm','forms/newEventForm'], function(timelineService, loadEventsForm, newEventForm) {
+            require(['timeline/timelineService','forms/loadEventsForm','forms/newEventForm', 'timeline/searchService'], function(timelineService, loadEventsForm, newEventForm, searchService) {
 
                 var timeline;
 
@@ -29,17 +30,19 @@
 
                     var options = {
                         editable: true,
-                        'width':  '100%',
-                        'cluster': true,
+                        width: '100%',
+                        cluster: true,
                         showMajorLabels: false,
                         axisOnTop: false,
                         groupsChangeable: true,
                         groupMinHeight: 150,
-                        groupsOnRight: false
+                        groupsOnRight: false,
+                        style: "dot"
                     };
                     timeline = timelineService.createTimeline('timeline', data, options);
 
                     newEventForm.show();
+                    searchService.show();
                 };
 
                 var onNewEventAdded = function(newEvent) {
