@@ -1,6 +1,7 @@
 define('forms/newEventForm', function () {
 
     var getDateFromInputs = function (datepickerId, timepickerId) {
+
         var datepickerValue = $('#' + datepickerId).datepicker('getDate');
         var timepickerValue = $('#' + timepickerId).data("timepicker").getTime().split(':');
         var newEventTimeHours = parseInt(timepickerValue[0]);

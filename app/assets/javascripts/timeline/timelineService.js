@@ -8,6 +8,7 @@ define('timeline/timelineService',function (require) {
     var newEventId = 0;
 
     var createTimeline = function (containerId, data, options) {
+
         var container = $('#' + containerId)[0];
         if ( timeline == null) {
             timeline = new links.Timeline(container);

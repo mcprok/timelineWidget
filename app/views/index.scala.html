@@ -7,10 +7,7 @@
     @newEventForm()
     @searchForm()
 
-    <div>
-        <h3 id="flashing"></h3>
-        <div id="timeline"></div>
-    </div>
+
 
     <script type="text/javascript">
         $(function() {
@@ -18,38 +15,12 @@
 
                 var timeline;
 
-                var onNewEventLoadedSuccess = function(data, groupName) {
-                    if ( !timelineService.canCreateGroup(groupName) ) {
-                        console.error('Cannot create a group - already exists: '+ groupName);
-                        return;
-                    }
-
-                    data.forEach(function(event) {
-                        event.group = groupName;
-                    });
-
-                    var options = {
-                        editable: true,
-                        width: '100%',
-                        cluster: true,
-                        showMajorLabels: false,
-                        axisOnTop: false,
-                        groupsChangeable: true,
-                        groupMinHeight: 150,
-                        groupsOnRight: false,
-                        style: "dot"
-                    };
-                    timeline = timelineService.createTimeline('timeline', data, options);
-
-                    newEventForm.show();
-                    searchService.show();
-                };
+                loadEventsForm.init();
 
                 var onNewEventAdded = function(newEvent) {
                     timelineService.addNewEvent(newEvent);
                 };
 
-                loadEventsForm.loadEventsHandler(onNewEventLoadedSuccess);
                 newEventForm.addNewEventSubmitHandler(onNewEventAdded);
             });
         });
