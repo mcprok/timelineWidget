@@ -72,8 +72,9 @@ define('forms/loadEventsForm', function (require) {
             style: "dot"
         };
 
-        $container.hide();
-        $('#timelines').show();
+        $('body').find('.is-active').removeClass('is-active');
+        $('#timelines').addClass('is-active');
+
         timeline = timelineService.createTimeline('timeline', data, options);
 
 
