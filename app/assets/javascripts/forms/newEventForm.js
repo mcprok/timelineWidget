@@ -38,14 +38,6 @@ define('forms/newEventForm', function () {
         });
     };
 
-    var show = function () {
-        $('#addEventForm').show();
-    };
-
-    var hide = function () {
-        $('#addEventForm').hide();
-    };
-
     var updateGroups = function(newGroups) {
         $("#groupSelect").html("");
         $(newGroups).each(function (i) {
@@ -55,8 +47,6 @@ define('forms/newEventForm', function () {
 
     return {
         addNewEventSubmitHandler: addNewEventSubmitHandler,
-        show: show,
-        hide: hide,
         updateGroups: updateGroups
     };
 

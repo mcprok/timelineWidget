@@ -1,11 +1,10 @@
 define('forms/loadEventsForm', function (require) {
 
     var timelineService = require('../timeline/timelineService');
-
-    var $container = $('#addNewEvent');
+    var viewSwitcher = require('../switcher');
 
     var init = function() {
-
+        viewSwitcher.init();
         $('#eventsLoadingForm').on('submit', function (e) {
             e.preventDefault();
 
@@ -72,8 +71,7 @@ define('forms/loadEventsForm', function (require) {
             style: "dot"
         };
 
-        $('body').find('.is-active').removeClass('is-active');
-        $('#timelines').addClass('is-active');
+        viewSwitcher.switchView($("#timelinesWrapper"));
 
         timeline = timelineService.createTimeline('timeline', data, options);
 

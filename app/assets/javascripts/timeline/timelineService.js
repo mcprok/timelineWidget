@@ -3,6 +3,7 @@ define('timeline/timelineService',function (require) {
     var selectionService = require('timeline/selectionService');
     var newEventService = require('forms/newEventForm');
     var searchService = require('timeline/searchService');
+    var viewSwitcher = require('../switcher');
 
     var timeline = null;
     var newEventId = 0;
@@ -33,6 +34,7 @@ define('timeline/timelineService',function (require) {
     };
 
     var addNewEvent = function (event) {
+        viewSwitcher.switchView($("#timelinesWrapper"));
         event.id = newEventId++;
         timeline.addItem(event);
         alertsService.publishSuccessAlert('Event created: ' + event.content + ' on ' + event.start);

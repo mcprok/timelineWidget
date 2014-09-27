@@ -1,7 +1,7 @@
 <form id="searchForm" role="form" >
     <label for="searchInput">Search:</label>
     <input type="text" class="form-control" id="searchInput" placeholder="Enter search string">
-    <button type="submit" id="searchAction">Search!!!</button>
+    <button type="submit" id="searchAction">Search for events</button>
 </form>
 
 
@@ -15,8 +15,6 @@ $(function() {
 
             timelineService.search(searchString);
         });
-
-        $('#searchForm' ).hide();
     });
 });
 </script>

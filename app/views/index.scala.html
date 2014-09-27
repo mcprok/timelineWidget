@@ -7,21 +7,20 @@
     @newEventForm()
     @searchForm()
 
-
-
     <script type="text/javascript">
         $(function() {
-            require(['timeline/timelineService','forms/loadEventsForm','forms/newEventForm', 'timeline/searchService'], function(timelineService, loadEventsForm, newEventForm, searchService) {
-
-                var timeline;
+            require(['timeline/timelineService','forms/loadEventsForm','forms/newEventForm', 'switcher'], function(timelineService, loadEventsForm, newEventForm, switcher) {
+                switcher.init();
 
                 loadEventsForm.init();
 
                 var onNewEventAdded = function(newEvent) {
+
                     timelineService.addNewEvent(newEvent);
                 };
 
                 newEventForm.addNewEventSubmitHandler(onNewEventAdded);
+
             });
         });
 

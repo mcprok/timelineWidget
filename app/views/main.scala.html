@@ -35,10 +35,16 @@
                             <a href="#page-top"></a>
                         </li>
                         <li>
-                            <a href="#add">Add new timeline</a>
+                            <a href="#" id="showTimelines">Show timelines</a>
                         </li>
                         <li>
-                            <a href="#download">Add event</a>
+                            <a href="#" id="addTimeline">Add new timeline</a>
+                        </li>
+                        <li>
+                            <a href="#" id="addEvent">Add event</a>
+                        </li>
+                        <li>
+                            <a href="#" id="searchButton">Search</a>
                         </li>
 
                     </ul>
@@ -51,7 +57,7 @@
         <h3 id="flashing"></h3>
 
             <!-- Add new event -->
-        <section id="addNewEvent" class="container content-section text-center is-active">
+        <section id="addNewTimeline" class="container content-full-width text-center is-active">
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2">
                     <h2>Add new event</h2>
@@ -71,18 +77,51 @@
             </div>
         </section>
 
-        <section id="timelines" class="container content-full-width text-center">
+        <section id="timelinesWrapper" class="container content-full-width text-center">
             <div class="row">
                 <div class="col-lg-12 ">
                     <h2>Timelines</h2>
-                    <div id="timeline"></div>
+                    <div id="timeline">You have no timelines loaded.</div>
                 </div>
             </div>
         </section>
 
-        @content
+        <section id="addEventWrapper" class="container content-full-width text-center">
+            <div class="row">
+                <div class="col-lg-12 ">
+                    <h2>Add new event</h2>
+                    @newEventForm()
+                </div>
+            </div>
+        </section>
+
+        <section id="searchWrapper" class="container content-full-width text-center">
+            <div class="row">
+                <div class="col-lg-12 ">
+                    <h2>Search for events</h2>
+                    @searchForm()
+                </div>
+            </div>
+        </section>
 
     </body>
+
+    <script type="text/javascript">
+    $(function() {
+        require(['timeline/timelineService','forms/loadEventsForm','forms/newEventForm', 'switcher'], function(timelineService, loadEventsForm, newEventForm, switcher) {
+            switcher.init();
+
+            loadEventsForm.init();
+
+            var onNewEventAdded = function(newEvent) {
+                timelineService.addNewEvent(newEvent);
+            };
+
+            newEventForm.addNewEventSubmitHandler(onNewEventAdded);
+        });
+    });
+
+    </script>
 </html>
 
 @helper.requireJs(core = routes.Assets.at("javascripts/require.js").url, module = routes.Assets.at("javascripts/main").url)

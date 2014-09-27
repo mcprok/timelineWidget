@@ -13,19 +13,8 @@ define("timeline/searchService", function() {
         return searchResults;
     };
 
-
-    var show = function() {
-        $('#searchForm').show();
-    };
-
-    var hide = function() {
-        $('#searchForm').hide();
-    };
-
     return {
-        search: search,
-        show: show,
-        hide: hide
+        search: search
     }
 
 });

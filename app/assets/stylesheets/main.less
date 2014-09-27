@@ -338,7 +338,7 @@ body {
   width: 400px;
 }
 
-#timelines {
+#timelinesWrapper {
   display: none;
 
   &.is-active {
@@ -346,7 +346,22 @@ body {
   }
 }
 
-#addNewEvent {
+#addNewTimeline {
+  display: none;
+
+  &.is-active {
+    display: block;
+  }
+}
+
+#addEventWrapper {
+  display: none;
+
+  &.is-active {
+    display: block;
+  }
+}
+#searchWrapper {
   display: none;
 
   &.is-active {
