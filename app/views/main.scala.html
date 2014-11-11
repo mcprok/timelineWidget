@@ -80,6 +80,9 @@
             <div class="row">
                 <div class="col-lg-12 ">
                     <h2>Timelines</h2>
+                    <button class="js-pointer-show">Show pointer</button>
+                    <button class="js-pointer-hide" style="display: none;">Hide pointer</button>
+
                     <div id="timeline">You have no timelines loaded.</div>
                 </div>
             </div>
@@ -153,16 +156,19 @@
 
     <script type="text/javascript">
     $(function() {
-        require(['timeline/timelineService','forms/loadEventsForm','forms/newEventForm', 'switcher'], function(timelineService, loadEventsForm, newEventForm, switcher) {
+        require(['timeline/timelineService','forms/loadEventsForm','forms/newEventForm', 'switcher'],
+        function(timelineService, loadEventsForm, newEventForm, switcher) {
             switcher.init();
 
             loadEventsForm.init();
 
             var onNewEventAdded = function(newEvent) {
                 timelineService.addNewEvent(newEvent);
+
             };
 
             newEventForm.addNewEventSubmitHandler(onNewEventAdded);
+
         });
     });
 

@@ -4,6 +4,7 @@ define('timeline/timelineService',function (require) {
     var newEventService = require('forms/newEventForm');
     var searchService = require('timeline/searchService');
     var viewSwitcher = require('../switcher');
+    var currentTimePointer = require('../currentTimePointer');
 
     var timeline = null;
     var newEventId = 0;
@@ -14,6 +15,8 @@ define('timeline/timelineService',function (require) {
         if ( timeline == null) {
             timeline = new links.Timeline(container);
             timeline.draw(data, options);
+            currentTimePointer.init(timeline);
+
         } else {
             timeline.addItems(data);
             timeline.redraw();
