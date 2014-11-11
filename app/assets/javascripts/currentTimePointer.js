@@ -5,6 +5,8 @@ define('currentTimePointer', function (require) {
     var frameStart,
         frameEnd;
 
+    var pointerEnabled = false;
+
     var timeline;
     var init = function (globalTimeline) {
         timeline = globalTimeline;
@@ -13,21 +15,53 @@ define('currentTimePointer', function (require) {
         frameEnd = timeline.end;
 
         $('.js-pointer-show').on('click', function (e) {
-            enablePointer();
+            enablePointer(true);
             $(e.currentTarget).hide();
             $('.js-pointer-hide').show();
         });
 
         $('.js-pointer-hide').on('click', function (e) {
-            disablePointer();
+            disablePointer(true);
             $(e.currentTarget).hide();
             $('.js-pointer-show').show();
         });
+
+        var $timelineContent =  $('.timeline-content');
+        var scrollTimeout = null;
+
+        $timelineContent.on('mousewheel', function () {
+
+            if (scrollTimeout) {
+                clearTimeout(scrollTimeout);
+            }
+            if(pointerEnabled) {
+                disablePointer(false);
+            }
+
+            scrollTimeout = setTimeout(function () {
+                enablePointer(false);
+            }, 500);
+        });
+
+        $timelineContent.on('mousedown', function(e) {
+            if(pointerEnabled) {
+                disablePointer(false);
+            }
+
+        });
+        $('body').on('mouseup', function(e) {
+
+            if(pointerEnabled) {
+                enablePointer(false);
+            }
+        });
+
+
     };
 
     var _updatePointerState = function (e) {
 
-        if(_checkResize()) {
+        if (_checkResize()) {
             _updateVisibleItemsCache();
         }
 
@@ -47,7 +81,7 @@ define('currentTimePointer', function (require) {
 
     };
 
-    var _checkResize = function() {
+    var _checkResize = function () {
         return !(frameStart == timeline.start && frameEnd == timeline.end);
     };
 
@@ -80,19 +114,25 @@ define('currentTimePointer', function (require) {
         $('.timeline-content').append($(pointer));
     };
 
-    var disablePointer = function () {
+    var disablePointer = function (byClick) {
         $('.pointer').hide();
         $('body').undelegate('.timeline-frame', 'mousemove', _updatePointerState);
+
+        if(byClick) {
+            pointerEnabled = false;
+        }
     };
 
-    var enablePointer = function () {
+    var enablePointer = function (byClick) {
         var $pointer = $('.pointer');
         if ($pointer.length === 0) {
             _addPointerToTimeline();
         }
         $pointer.show();
         $('body').delegate('.timeline-frame', 'mousemove', _updatePointerState);
-
+        if(byClick) {
+            pointerEnabled = true;
+        }
     };
 
     var _getVisibleItems = function (start, end) {
