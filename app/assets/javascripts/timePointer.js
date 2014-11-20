@@ -1,4 +1,4 @@
-define('currentTimePointer', function (require) {
+define('timePointer', function (require) {
 
     var currentlyVisibleItems = [];
 
