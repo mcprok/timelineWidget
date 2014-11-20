@@ -31,16 +31,19 @@ define('currentTimePointer', function (require) {
 
         $timelineContent.on('mousewheel', function () {
 
-            if (scrollTimeout) {
-                clearTimeout(scrollTimeout);
-            }
+
             if(pointerEnabled) {
+                if (scrollTimeout) {
+                    clearTimeout(scrollTimeout);
+                }
+
                 disablePointer(false);
+                scrollTimeout = setTimeout(function () {
+                    enablePointer(false);
+                }, 500);
             }
 
-            scrollTimeout = setTimeout(function () {
-                enablePointer(false);
-            }, 500);
+
         });
 
         $timelineContent.on('mousedown', function(e) {
