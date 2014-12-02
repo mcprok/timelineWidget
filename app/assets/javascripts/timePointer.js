@@ -4,7 +4,7 @@ define('timePointer', function (require) {
 
     var frameStart,
         frameEnd;
-
+    var initialized = false;
     var pointerEnabled = false;
 
     var timeline;
@@ -65,6 +65,7 @@ define('timePointer', function (require) {
     var _updatePointerState = function (e) {
 
         if (_checkResize()) {
+            initialized = true;
             _updateVisibleItemsCache();
         }
 
@@ -72,8 +73,9 @@ define('timePointer', function (require) {
         var boundingBox = $timelineFrame.get(0).getBoundingClientRect().left;
         var groupWidth = $('.timeline-groups-axis').width();
 
-        var leftValue = e.screenX - (boundingBox + groupWidth );
+        var leftValue = e.pageX - (boundingBox + groupWidth );
         $('.pointer').css('left', leftValue);
+
 
 
         $('.highlight').removeClass('highlight');
@@ -85,7 +87,7 @@ define('timePointer', function (require) {
     };
 
     var _checkResize = function () {
-        return !(frameStart == timeline.start && frameEnd == timeline.end);
+        return !initialized || !(frameStart == timeline.start && frameEnd == timeline.end);
     };
 
     var _updateVisibleItemsCache = function () {
