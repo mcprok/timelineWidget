@@ -17,18 +17,19 @@ define('timeline/timelineClass', function () {
 
         $.extend(optionsUsed, options);
         this.nextGroupId = 1;
-        console.log('Timeline class');
-        console.log(containerId);
         this.$container = $('#' + containerId);
         this.groups = {}; // mapa nazwaGrupy : grupa - jeden timeline biblioteczki
 
         this.createGroup = function (groupName, data) {
             if (this.canCreateGroup(groupName)) {
-                console.log("creating group");
-                var $newGroupWrapper = $('</div id="timelineGroup_' + this.nextGroupId + '">');
+                if ( this.nextGroupId == 1) {
+                    console.log('clearing');
+                    this.$container.html('');
+                }
+                var $newGroupWrapper = $('<div id="timelineGroup_' + this.nextGroupId + '"></div>');
                 this.$container.append($newGroupWrapper);
-                this.nextGroupId++;
-                var $newTimeline = new links.Timeline($newGroupWrapper);
+                this.nextGroupId = this.nextGroupId + 1;
+                var $newTimeline = new links.Timeline($newGroupWrapper[0]);
                 $newTimeline.draw(data, optionsUsed);
                 this.groups[groupName] = $newTimeline;
             } else {

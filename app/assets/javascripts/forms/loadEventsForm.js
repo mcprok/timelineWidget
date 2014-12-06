@@ -3,6 +3,8 @@ define('forms/loadEventsForm', function (require) {
     var timelineService = require('../timeline/timelineService');
     var viewSwitcher = require('../switcher');
 
+    var timeline = null;
+
     var init = function() {
         viewSwitcher.init();
         $('#eventsLoadingForm').on('submit', function (e) {
@@ -69,9 +71,11 @@ define('forms/loadEventsForm', function (require) {
 
         viewSwitcher.switchView($("#timelinesWrapper"));
 
-        var timeline = timelineService.createTimeline('timeline',options);
-        timeline.createGroup(groupName, data);
+        if ( timeline == null ) {
+            timeline = timelineService.createTimeline('timeline',options);
+        }
 
+        timeline.createGroup(groupName, data);
     };
 
     return {
