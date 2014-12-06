@@ -50,10 +50,6 @@ define('forms/loadEventsForm', function (require) {
 
 
     var addNewTimeline = function(data, groupName) {
-        if ( !timelineService.canCreateGroup(groupName) ) {
-            console.error('Cannot create a group - already exists: '+ groupName);
-            return;
-        }
 
         data.forEach(function(event) {
             event.group = groupName;
@@ -73,8 +69,8 @@ define('forms/loadEventsForm', function (require) {
 
         viewSwitcher.switchView($("#timelinesWrapper"));
 
-        timeline = timelineService.createTimeline('timeline', data, options);
-
+        var timeline = timelineService.createTimeline('timeline',options);
+        timeline.createGroup(groupName, data);
 
     };
 

@@ -1,4 +1,4 @@
-define('timeline/timelineService',function (require) {
+define('timeline/timelineService', function (require) {
     var alertsService = require('alerts/alertsService');
     var selectionService = require('timeline/selectionService');
     var newEventService = require('forms/newEventForm');
@@ -6,34 +6,14 @@ define('timeline/timelineService',function (require) {
     var viewSwitcher = require('../switcher');
     var timePointer = require('../timePointer');
 
-    var $timeline = null;
-    var newEventId = 0;
+    var timelineClass = require('timeline/timelineClass');
+    var timelines = {};  //$container: $chaplingsTimelineObject
 
-    var createTimeline = function (containerId, data, options) {
 
-        var container = $('#' + containerId)[0];
-        if ( $timeline == null) {
-            $timeline = new links.Timeline(container);
-            $timeline.draw(data, options);
-            timePointer.init($timeline);
-
-        } else {
-            $timeline.addItems(data);
-            $timeline.redraw();
-        }
-
-        newEventId += data.length;
-
-        links.events.addListener($timeline, 'delete', onEventDelete);
-        alertsService.publishInfoAlert('Timeline created!');
-
-        links.events.addListener($timeline, 'select',function() {
-            selectionService.selectCallback($timeline)
-        });
-
-        newEventService.updateGroups($timeline.groups);
-
-        return $timeline;
+    var createTimeline = function (containerId, options) {
+        var timeline = new timelineClass.Timeline(containerId, options);
+        timelines[containerId] = timeline;
+        return timeline;
     };
 
     var addNewEvent = function (event) {
@@ -43,8 +23,8 @@ define('timeline/timelineService',function (require) {
         alertsService.publishSuccessAlert('Event created: ' + event.content + ' on ' + event.start);
     };
 
-    var getTimeline = function () {
-        return $timeline;
+    var getTimeline = function (containerId) {
+        return timelines[containerId];
     };
 
     var onEventDelete = function () {
@@ -52,19 +32,19 @@ define('timeline/timelineService',function (require) {
         alertsService.publishInfoAlert('Event deleted: ' + deletedEvent.content);
     };
 
-    var addEventHandler = function(type, callback) {
-        if ($timeline == null || type == null || type.length > 0 ) {
+    var addEventHandler = function (type, callback) {
+        if ($timeline == null || type == null || type.length > 0) {
             console.error('Cannot add on selection handler - no timeline or data provided');
         }
         links.events.addListener($timeline, type, callback);
     };
 
-    var canCreateGroup = function(groupName) {
+    var canCreateGroup = function (groupName) {
         return !groupExists(groupName);
     };
 
-    var groupExists = function( groupName) {
-        if ( $timeline == null) {
+    var groupExists = function (groupName) {
+        if ($timeline == null) {
             return false;
         } else {
             return $timeline.groups.some(function (group) {
@@ -75,17 +55,17 @@ define('timeline/timelineService',function (require) {
         }
     };
 
-    var search =  function(searchString) {
+    var search = function (searchString) {
         return searchService.search(searchString, $timeline.items);
     };
 
     return {
         createTimeline: createTimeline,
-        addNewEvent: addNewEvent,
-        getTimeline: getTimeline,
-        addEventHandler: addEventHandler,
-        canCreateGroup: canCreateGroup,
-        search: search
+//        addNewEvent: addNewEvent,
+        getTimeline: getTimeline
+//        addEventHandler: addEventHandler,
+//        canCreateGroup: canCreateGroup,
+//        search: search
     };
 
 });
