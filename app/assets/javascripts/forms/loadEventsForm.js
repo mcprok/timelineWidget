@@ -3,9 +3,11 @@ define('forms/loadEventsForm', function (require) {
     var timelineService = require('../timeline/timelineService');
     var viewSwitcher = require('../switcher');
 
+    var newEventForm = require('forms/newEventForm');
+
     var timeline = null;
 
-    var init = function() {
+    var init = function () {
         viewSwitcher.init();
         $('#eventsLoadingForm').on('submit', function (e) {
             e.preventDefault();
@@ -20,17 +22,16 @@ define('forms/loadEventsForm', function (require) {
                 contentType: false,
                 processData: false
             }).done(function (data) {
+                var preparedData = prepareEventData($.parseJSON(data).events);
+                var group = $('#fileUploadGroup').val();
 
-                    var preparedData = prepareEventData($.parseJSON(data).events);
-                    var group = $('#fileUploadGroup').val();
+                addNewTimeline(preparedData, group);
+            }).fail(function (jqXHR, status, errorThrown) {
 
-                    addNewTimeline(preparedData, group);
-                }).fail(function (jqXHR, status, errorThrown) {
-
-                    console.log(errorThrown);
-                    console.log(jqXHR.responseText);
-                    console.log(jqXHR.status);
-                });
+                console.log(errorThrown);
+                console.log(jqXHR.responseText);
+                console.log(jqXHR.status);
+            });
         });
     };
 
@@ -51,9 +52,9 @@ define('forms/loadEventsForm', function (require) {
     };
 
 
-    var addNewTimeline = function(data, groupName) {
+    var addNewTimeline = function (data, groupName) {
 
-        data.forEach(function(event) {
+        data.forEach(function (event) {
             event.group = groupName;
         });
 
@@ -71,12 +72,19 @@ define('forms/loadEventsForm', function (require) {
 
         viewSwitcher.switchView($("#timelinesWrapper"));
 
-        if ( timeline == null ) {
-            timeline = timelineService.createTimeline('timeline',options);
-            timeline.onGroupCreated(function(groupName, $group) {
-                $('#groupSelect').append('<option value="">'+groupName+'</option>');
+        if (timeline == null) {
+            timeline = timelineService.createTimeline('timeline', options);
+            timeline.onGroupCreated(function (groupName, $group) {
+                $('#groupSelect').append('<option value="">' + groupName + '</option>');
             });
+
+            var newEventCallback = function (event, groupName) {
+                timeline.addEvent(event, groupName);
+            };
+
+            newEventForm.addNewEventSubmitHandler(newEventCallback)
         }
+
 
         timeline.createGroup(groupName, data);
     };

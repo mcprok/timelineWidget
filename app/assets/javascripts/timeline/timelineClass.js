@@ -33,7 +33,6 @@ define('timeline/timelineClass', function () {
                 var $newTimeline = new links.Timeline($newGroupWrapper[0]);
                 $newTimeline.draw(data, optionsUsed);
                 joinTimelines(this.groups, $newTimeline);
-
                 this.groups[groupName] = $newTimeline;
             } else {
                 console.log("cannot create group with such name: " + groupName);
@@ -76,19 +75,37 @@ define('timeline/timelineClass', function () {
             // TODO
         };
 
-        this.addEvent = function (event, group) {
-
-
-            // TODO
+        this.addEvent = function (event, groupName) {
+            if (this.groupExists(groupName)) {
+                console.log('group exists, adding event');
+                console.log(event);
+                console.log(groupName);
+                var $group = this.groups[groupName];
+                console.log($group);
+                event.id = 100000;
+                $group.addItem(event);
+//                $group.redraw();
+            } else {
+                console.log('group doesnt exist: ' + groupName);
+            }
         };
 
         this.getGroup = function (groupName) {
-            // TODO
+            if (this.groupExists(groupName)) {
+                return this.groups[groupName];
+            } else {
+                console.log('Cannot get group. It doesnt exists: ' + groupName);
+                return null;
+            }
         };
 
         this.addEventHandler = function (type, callback, groupName) {
             if (groupName != undefined) {
-                links.events.addListener(groupName, type, callback);
+                if (this.groupExists(groupName)) {
+                    links.events.addListener(groupName, type, callback);
+                } else {
+                    console.log('Cannot add event. Group doesnt exist: ' + groupName);
+                }
             } else {
                 _.forEach(this.groups, function (container) {
                     links.events.addListener(container, type, callback);

@@ -16,7 +16,6 @@ define('forms/newEventForm', function () {
     var addNewEventSubmitHandler = function (callback) {
         $('#addEventForm').on('submit', function (e) {
             e.preventDefault();
-
             var newEventStartDate = getDateFromInputs('newEventStartDate', 'newEventStartTime');
 
             var selectedGroup = $("#groupSelect").find("option:selected").html();
@@ -33,21 +32,13 @@ define('forms/newEventForm', function () {
             }
 
             if (callback) {
-                callback(newEvent);
+                callback(newEvent, selectedGroup);
             }
         });
     };
 
-    var updateGroups = function(newGroups) {
-        $("#groupSelect").html("");
-        $(newGroups).each(function (i) {
-            $("#groupSelect").append("<option value=\""+newGroups[i].value+"\">"+newGroups[i].content+"</option>");
-        });
-    };
-
     return {
-        addNewEventSubmitHandler: addNewEventSubmitHandler,
-        updateGroups: updateGroups
+        addNewEventSubmitHandler: addNewEventSubmitHandler
     };
 
 });
