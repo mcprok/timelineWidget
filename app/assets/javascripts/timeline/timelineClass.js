@@ -124,22 +124,51 @@ define('timeline/timelineClass', function () {
             // TODO
         };
 
-        this.search = (function () {
-            // TODO
+        this.search = function (key, options) {
             var searchConfig = {
-//            domyslny konfig
+                chronological: true,
+                startDate: null,
+                endDate: null,
+                groups: []
             };
 
-            return function (key, options) {
+            var allGroups = this.groups;
+
+            return function (searchString, options) {
+                console.log('In Inner search');
                 $.extend(searchConfig, options);
-//            juz normalny kod
+                console.log(searchConfig);
+                var groupsToSearch = [];
+
+                if (searchConfig["groups"].length == 0) {
+                    _.forEach(allGroups, function (group) {
+                        groupsToSearch.push(group);
+                    });
+                } else {
+                    _.forEach(searchConfig["groups"], function (groupName) {
+                        if (allGroups.hasOwnProperty(groupName)) {
+                            groupsToSearch.push(allGroups[groupName]);
+                        }
+                    });
+                }
+
+                console.log(groupsToSearch);
+
+                var searchResults = [];
+                _.forEach(groupsToSearch, function ($group) {
+                    for (var i = 0; i < $group.items.length; i++) {
+                        var item = $group.items[i];
+                        if (item.content.toLowerCase().indexOf(searchString.toLowerCase()) > -1) {
+                            searchResults.push(item);
+                        }
+                    }
+                });
+
+                console.log(searchResults);
+                return searchResults;
             }
+        };
 
-        });
-
-//        var search = function (key, options) {
-//
-//        };
         // options = {
         //      chronological : true/false
         //      startDate :
