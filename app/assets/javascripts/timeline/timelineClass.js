@@ -22,7 +22,7 @@ define('timeline/timelineClass', function () {
 
         this.createGroup = function (groupName, data) {
             if (this.canCreateGroup(groupName)) {
-                if ( this.nextGroupId == 1) {
+                if (this.nextGroupId == 1) {
                     console.log('clearing');
                     this.$container.html('');
                 }
@@ -31,16 +31,29 @@ define('timeline/timelineClass', function () {
                 this.nextGroupId = this.nextGroupId + 1;
                 var $newTimeline = new links.Timeline($newGroupWrapper[0]);
                 $newTimeline.draw(data, optionsUsed);
+                joinTimelines(this.groups, $newTimeline);
+
                 this.groups[groupName] = $newTimeline;
             } else {
                 console.log("cannot create group with such name: " + groupName);
             }
-//        timePointer.init($timeline);
-//        } else {
-//            $timeline.addItems(data);
-//            $timeline.redraw();
-//        }
         };
+
+        function joinTimelines(oldTimelines, $newTimeline) {
+            _.forEach(oldTimelines, function (timeline) {
+                console.log(timeline);
+                links.events.addListener(timeline, 'rangechange', function () {
+                    var range = timeline.getVisibleChartRange();
+                    $newTimeline.setVisibleChartRange(range.start, range.end);
+                });
+            });
+            links.events.addListener($newTimeline, 'rangechange', function () {
+                var range = $newTimeline.getVisibleChartRange();
+                _.forEach(oldTimelines, function (group) {
+                    group.setVisibleChartRange(range.start, range.end);
+                });
+            });
+        }
 
         this.canCreateGroup = function (groupName) {
             return !this.groupExists(groupName);
