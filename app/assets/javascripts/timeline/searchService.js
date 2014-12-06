@@ -1,6 +1,5 @@
 define("timeline/searchService", function() {
 
-
     var search = function(searchString, items) {
         var searchResults = [];
         for ( var i = 0 ; i < items.length ; i++ ) {
@@ -9,12 +8,6 @@ define("timeline/searchService", function() {
                 searchResults.push(item);
             }
         }
-        var $searchResults = $('#searchResults');
-        $searchResults.html("");
-        _.each(searchResults, function(item) {
-            $searchResults.append($('<span>'+ item.content+ '</span><br>'));
-        });
-        console.log(searchResults);
         return searchResults;
     };
 
