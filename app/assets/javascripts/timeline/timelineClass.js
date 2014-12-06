@@ -19,6 +19,7 @@ define('timeline/timelineClass', function () {
         this.nextGroupId = 1;
         this.$container = $('#' + containerId);
         this.groups = {}; // mapa nazwaGrupy : grupa - jeden timeline biblioteczki
+        this.onGroupCreatedCallbacks = [];
 
         this.createGroup = function (groupName, data) {
             if (this.canCreateGroup(groupName)) {
@@ -37,6 +38,8 @@ define('timeline/timelineClass', function () {
             } else {
                 console.log("cannot create group with such name: " + groupName);
             }
+
+            this.fireOnGroupCreatedCallbacks(groupName, $newTimeline);
         };
 
         function joinTimelines(oldTimelines, $newTimeline) {
@@ -55,6 +58,12 @@ define('timeline/timelineClass', function () {
             });
         }
 
+        this.fireOnGroupCreatedCallbacks = function (groupName, $group) {
+            _.forEach(this.onGroupCreatedCallbacks, function (callback) {
+                callback(groupName, $group);
+            });
+        };
+
         this.canCreateGroup = function (groupName) {
             return !this.groupExists(groupName);
         };
@@ -68,6 +77,8 @@ define('timeline/timelineClass', function () {
         };
 
         this.addEvent = function (event, group) {
+
+
             // TODO
         };
 
@@ -90,7 +101,7 @@ define('timeline/timelineClass', function () {
         };
 
         this.onGroupCreated = function (callback) {
-            // TODO
+            this.onGroupCreatedCallbacks.push(callback);
         };
         this.onGroupDeleted = function (callback) {
             // TODO

@@ -39,21 +39,6 @@ define('timeline/timelineService', function (require) {
         links.events.addListener($timeline, type, callback);
     };
 
-    var canCreateGroup = function (groupName) {
-        return !groupExists(groupName);
-    };
-
-    var groupExists = function (groupName) {
-        if ($timeline == null) {
-            return false;
-        } else {
-            return $timeline.groups.some(function (group) {
-                if (group.content === groupName) {
-                    return true;
-                }
-            });
-        }
-    };
 
     var search = function (searchString) {
         return searchService.search(searchString, $timeline.items);

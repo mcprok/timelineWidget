@@ -73,6 +73,9 @@ define('forms/loadEventsForm', function (require) {
 
         if ( timeline == null ) {
             timeline = timelineService.createTimeline('timeline',options);
+            timeline.onGroupCreated(function(groupName, $group) {
+                $('#groupSelect').append('<option value="">'+groupName+'</option>');
+            });
         }
 
         timeline.createGroup(groupName, data);
