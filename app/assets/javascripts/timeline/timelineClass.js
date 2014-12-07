@@ -20,6 +20,7 @@ define('timeline/timelineClass', function () {
         this.$container = $('#' + containerId);
         this.groups = {}; // mapa nazwaGrupy : grupa - jeden timeline biblioteczki
         this.onGroupCreatedCallbacks = [];
+        this.groupsNextEventId = {};
 
         this.createGroup = function (groupName, data) {
             if (this.canCreateGroup(groupName)) {
@@ -27,18 +28,19 @@ define('timeline/timelineClass', function () {
                     console.log('clearing');
                     this.$container.html('');
                 }
-                var $newGroupWrapper = $('<div id="timelineGroup_' + this.nextGroupId + '"></div>');
+                var $newGroupWrapper = $('<div id="timelineGroup_' + this.nextGroupId + '"></div>'); // TODO change for multiple
                 this.$container.append($newGroupWrapper);
                 this.nextGroupId = this.nextGroupId + 1;
                 var $newTimeline = new links.Timeline($newGroupWrapper[0]);
-                $newTimeline.draw(data, optionsUsed);
                 joinTimelines(this.groups, $newTimeline);
+                $newTimeline.draw(data, optionsUsed);
                 this.groups[groupName] = $newTimeline;
+                this.groupsNextEventId[groupName] = data.length + 1;
             } else {
                 console.log("cannot create group with such name: " + groupName);
             }
 
-            this.fireOnGroupCreatedCallbacks(groupName, $newTimeline);
+            this.fireOnGroupCreatedCallbacks(groupName, $newTimeline, $newGroupWrapper);
         };
 
         function joinTimelines(oldTimelines, $newTimeline) {
@@ -57,9 +59,9 @@ define('timeline/timelineClass', function () {
             });
         }
 
-        this.fireOnGroupCreatedCallbacks = function (groupName, $group) {
+        this.fireOnGroupCreatedCallbacks = function (groupName, $group, $container) {
             _.forEach(this.onGroupCreatedCallbacks, function (callback) {
-                callback(groupName, $group);
+                callback(groupName, $group, $container);
             });
         };
 
@@ -77,14 +79,11 @@ define('timeline/timelineClass', function () {
 
         this.addEvent = function (event, groupName) {
             if (this.groupExists(groupName)) {
-                console.log('group exists, adding event');
-                console.log(event);
-                console.log(groupName);
                 var $group = this.groups[groupName];
-                console.log($group);
-                event.id = 100000;
-                $group.addItem(event);
-//                $group.redraw();
+                event.id = this.groupsNextEventId;
+                this.groupsNextEventId = this.groupsNextEventId + 1;
+                $group.addItem(event, true);
+                $group.redraw();
             } else {
                 console.log('group doesnt exist: ' + groupName);
             }
@@ -120,6 +119,7 @@ define('timeline/timelineClass', function () {
         this.onGroupCreated = function (callback) {
             this.onGroupCreatedCallbacks.push(callback);
         };
+
         this.onGroupDeleted = function (callback) {
             // TODO
         };
