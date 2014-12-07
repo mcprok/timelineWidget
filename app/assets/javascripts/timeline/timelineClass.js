@@ -203,10 +203,31 @@ define('timeline/timelineClass', function (require) {
         };
 
         var self = this;
-        $('body').delegate('.timeline-content','mousemove', function(e) {
-            self.highlightEvents(e);
 
-        });
+        var pointerHandler = function(e) {
+            self.highlightEvents(e);
+        };
+
+        this.enablePointer = function() {
+
+            $('.pointer').show();
+            $('body').delegate('.timeline-content','mousemove' ,pointerHandler);
+            self.pointerActive = true;
+        };
+
+        this.disablePointer = function() {
+
+            $('.pointer').hide();
+            $('body').undelegate('.timeline-content','mousemove' ,pointerHandler);
+            self.pointerActive = false;
+        };
+
+        if(optionsUsed.pointerActive === true) {
+            this.enablePointer();
+        }else {
+            this.disablePointer();
+        }
+
     }
 
     return {

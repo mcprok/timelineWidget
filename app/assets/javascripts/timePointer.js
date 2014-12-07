@@ -10,8 +10,7 @@ define('timePointer', function (require) {
         this.$pointer = $('<div class="pointer" style="height:100%; width:1px; background: #e00; display: block; position: absolute;left: 0px;"></div>');
         this.initialized = false;
         this.currentlyVisibleItems = {};
-
-        $(this.container).find('.timeline-content').append(this.$pointer);
+       $(this.container).find('.timeline-content').append(this.$pointer);
 
         this.getCurrentlyVisibleItems = function () {
             if (this._isResized()) {
@@ -124,34 +123,7 @@ define('timePointer', function (require) {
 
         };
 
-
-
     }
-
-
-    /*
-    var _updatePointerState = function (e) {
-
-        var $timelineFrame = $('.timeline-frame');
-        var boundingBox = $timelineFrame.get(0).getBoundingClientRect().left;
-        var groupWidth = $('.timeline-groups-axis').width();
-
-        var leftValue = e.pageX - (boundingBox + groupWidth );
-        $('.pointer').css('left', leftValue);
-
-
-        $('.highlight').removeClass('highlight');
-
-        _.each(currentlyVisibleItems.items[leftValue], function (itemIndex) {
-            $(timeline.items[itemIndex].dom).addClass('highlight');
-        });
-
-        _.each(currentlyVisibleItems.clusters[leftValue], function (itemIndex) {
-            $(timeline.clusters[itemIndex].dom).addClass('highlight');
-        });
-
-    };*/
-
 
     return {
         Pointer : Pointer
