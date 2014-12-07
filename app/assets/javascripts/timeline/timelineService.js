@@ -48,7 +48,6 @@ define('timeline/timelineService', function (require) {
         return searchService.search(searchString, $timeline.items);
     };
 
-
     return {
         createTimeline: createTimeline,
 //        addNewEvent: addNewEvent,
