@@ -1,5 +1,8 @@
 define('timePointer', function (require) {
 
+    var $ = require('jquery');
+    var _ = require('lodash');
+
     var currentlyVisibleItems = [];
 
     var frameStart,

@@ -1,5 +1,6 @@
 define('forms/loadEventsForm', function (require) {
 
+    var $ = require('jquery');
     var timelineService = require('../timeline/timelineService');
     var viewSwitcher = require('../switcher');
 

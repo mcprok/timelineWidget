@@ -1,4 +1,6 @@
-define('forms/newEventForm', function () {
+define('forms/newEventForm', function(require) {
+
+    var $ = require('jquery');
 
     var getDateFromInputs = function (datepickerId, timepickerId) {
 
@@ -38,10 +40,10 @@ define('forms/newEventForm', function () {
         });
     };
 
-    var updateGroups = function(newGroups) {
+    var updateGroups = function (newGroups) {
         $("#groupSelect").html("");
         $(newGroups).each(function (i) {
-            $("#groupSelect").append("<option value=\""+newGroups[i].value+"\">"+newGroups[i].content+"</option>");
+            $("#groupSelect").append("<option value=\"" + newGroups[i].value + "\">" + newGroups[i].content + "</option>");
         });
     };
 

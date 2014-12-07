@@ -1,6 +1,8 @@
-define(function () {
+define(function (require) {
 
-    var alertTemplate = '<div class="alert alert-<%= alertType %> alert-dismissible" role="alert">'+
+    var $ = require('jquery');
+
+    var alertTemplate = '<div class="alert alert-<%= alertType %> alert-dismissible" role="alert">' +
         '<button type="button" class="close" data-dismiss="alert">' +
         '<span aria-hidden="true">&times;</span>' +
         '<span class="sr-only">Close</span>' +

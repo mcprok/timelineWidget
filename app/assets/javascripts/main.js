@@ -2,7 +2,8 @@ requirejs.config({
 
     baseUrl: '/assets/javascripts/',
     paths: {
-        tpl: 'tpl'
+        jquery : '/assets/javascripts/libs/jquery-1.9.0.min',
+        lodash : '/assets/javascripts/libs/lodash'
     }
 
 });
