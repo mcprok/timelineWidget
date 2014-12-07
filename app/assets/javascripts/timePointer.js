@@ -80,8 +80,12 @@ define('timePointer', function (require) {
 
         $('.highlight').removeClass('highlight');
 
-        _.each(currentlyVisibleItems[leftValue], function (itemIndex) {
+        _.each(currentlyVisibleItems.items[leftValue], function (itemIndex) {
             $(timeline.items[itemIndex].dom).addClass('highlight');
+        });
+
+        _.each(currentlyVisibleItems.clusters[leftValue], function (itemIndex) {
+            $(timeline.clusters[itemIndex].dom).addClass('highlight');
         });
 
     };
@@ -94,24 +98,34 @@ define('timePointer', function (require) {
         var interval = timeline.getVisibleChartRange();
         var contentWidth = $('.timeline-content').width();
 
-        currentlyVisibleItems = new Array(contentWidth);
+        currentlyVisibleItems = {
+            items : new Array(contentWidth),
+            clusters : new Array(contentWidth)
+        };
 
         for (var i = 0; i < contentWidth; i++) {
-            currentlyVisibleItems[i] = [];
+            currentlyVisibleItems.items[i] = [];
+            currentlyVisibleItems.clusters[i] = [];
         }
 
-        var items = _getVisibleItems(interval.start, interval.end);
 
-        _.each(items, function (currentItem) {
-            var item = timeline.items[currentItem.row];
+        var items = _getVisibleEvents(interval.start, interval.end, 'items');
+         var clusters = _getVisibleEvents(interval.start, interval.end, 'clusters');
+
+        _addToVisibleItems(items, 'items', contentWidth);
+        _addToVisibleItems(clusters, 'clusters', contentWidth);
+    };
+
+    var _addToVisibleItems = function(array, type, contentWidth) {
+
+        _.each(array, function (currentItem) {
+            var item = timeline[type][currentItem.row];
             var start = item.left > 0 ? Math.floor(item.left) : 0;
             var end = item.right > 0 ? Math.ceil(item.right) : 0;
             for (var i = start; i < end && i < contentWidth; i++) {
-                currentlyVisibleItems[i].push(currentItem.row);
+                currentlyVisibleItems[type][i].push(currentItem.row);
             }
-
         });
-
     };
 
     var _addPointerToTimeline = function () {
@@ -140,8 +154,8 @@ define('timePointer', function (require) {
         }
     };
 
-    var _getVisibleItems = function (start, end) {
-        var items = timeline.items;
+    var _getVisibleEvents = function (start, end, type) {
+        var items = timeline[type];
         var itemsInRange = [];
 
         if (items) {
