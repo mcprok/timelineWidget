@@ -12,8 +12,8 @@ $(function() {
         $('#searchAction').on('click', function(e) {
             e.preventDefault();
             var searchString = $('#searchInput' ).val();
-
-            var searchResults = timelineService.search(searchString);
+//            var searchGroupName =
+            var searchResults = timelineService.getTimeline('timeline').search(searchString)(searchString);
             var $searchResults = $('#searchResults');
             $searchResults.find("tbody").html("");
 
@@ -22,7 +22,7 @@ $(function() {
                 var itemEndDate = createCellString(formatedString(item.end));
                 var itemGroup = createCellString(item.group.content);
                 var itemContent = createCellString(item.content);
-                var tableRow = $('<tr>' + itemContent + itemStartDate +itemEndDate+ itemGroup+$('</tr>'));
+                var tableRow = $('<tr>' + itemContent + itemStartDate +itemEndDate+ itemGroup + $('</tr>'));
                 $searchResults.append(tableRow);
             });
         });

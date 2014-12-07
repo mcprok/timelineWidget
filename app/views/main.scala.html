@@ -171,16 +171,14 @@
         require(['timeline/timelineService','forms/loadEventsForm','forms/newEventForm', 'switcher'],
         function(timelineService, loadEventsForm, newEventForm, switcher) {
             switcher.init();
-
             loadEventsForm.init();
 
-            var onNewEventAdded = function(newEvent) {
-                timelineService.addNewEvent(newEvent);
+//            var onNewEventAdded = function(newEvent) {
+//                timelineService.addNewEvent(newEvent);
+//
+//            };
 
-            };
-
-            newEventForm.addNewEventSubmitHandler(onNewEventAdded);
-
+//            newEventForm.addNewEventSubmitHandler(onNewEventAdded);
         });
     });
 

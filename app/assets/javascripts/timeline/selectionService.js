@@ -22,7 +22,7 @@ define('timeline/selectionService',function (require) {
                 $eventData.find('.event-description > .event-content').text(item.description);
 
                 $('#detailsModal').modal({
-                        "backdrop" : "static"
+                    "backdrop": "static"
                 });
             }
         }

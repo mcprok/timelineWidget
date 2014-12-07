@@ -1,5 +1,5 @@
 define('timeline/timelineService', function (require) {
-
+    
     var $ = require('jquery');
 
     var alertsService =         require('alerts/alertsService');
@@ -11,32 +11,14 @@ define('timeline/timelineService', function (require) {
 
     var $timeline = null;
     var newEventId = 0;
+    var timelineClass = require('timeline/timelineClass');
+    var timelines = {};  //$container: $chaplingsTimelineObject
 
-    var createTimeline = function (containerId, data, options) {
 
-        var container = $('#' + containerId)[0];
-        if ($timeline == null) {
-            $timeline = new links.Timeline(container);
-            $timeline.draw(data, options);
-            timePointer.init($timeline);
-
-        } else {
-            $timeline.addItems(data);
-            $timeline.redraw();
-        }
-
-        newEventId += data.length;
-
-        links.events.addListener($timeline, 'delete', onEventDelete);
-        alertsService.publishInfoAlert('Timeline created!');
-
-        links.events.addListener($timeline, 'select', function () {
-            selectionService.selectCallback($timeline)
-        });
-
-        newEventService.updateGroups($timeline.groups);
-
-        return $timeline;
+    var createTimeline = function (containerId, options) {
+        var timeline = new timelineClass.Timeline(containerId, options);
+        timelines[containerId] = timeline;
+        return timeline;
     };
 
     var addNewEvent = function (event) {
@@ -46,8 +28,8 @@ define('timeline/timelineService', function (require) {
         alertsService.publishSuccessAlert('Event created: ' + event.content + ' on ' + event.start);
     };
 
-    var getTimeline = function () {
-        return $timeline;
+    var getTimeline = function (containerId) {
+        return timelines[containerId];
     };
 
     var onEventDelete = function () {
@@ -62,21 +44,6 @@ define('timeline/timelineService', function (require) {
         links.events.addListener($timeline, type, callback);
     };
 
-    var canCreateGroup = function (groupName) {
-        return !groupExists(groupName);
-    };
-
-    var groupExists = function (groupName) {
-        if ($timeline == null) {
-            return false;
-        } else {
-            return $timeline.groups.some(function (group) {
-                if (group.content === groupName) {
-                    return true;
-                }
-            });
-        }
-    };
 
     var search = function (searchString) {
         return searchService.search(searchString, $timeline.items);
@@ -84,11 +51,11 @@ define('timeline/timelineService', function (require) {
 
     return {
         createTimeline: createTimeline,
-        addNewEvent: addNewEvent,
-        getTimeline: getTimeline,
-        addEventHandler: addEventHandler,
-        canCreateGroup: canCreateGroup,
-        search: search
+//        addNewEvent: addNewEvent,
+        getTimeline: getTimeline
+//        addEventHandler: addEventHandler,
+//        canCreateGroup: canCreateGroup,
+//        search: search
     };
 
 });
