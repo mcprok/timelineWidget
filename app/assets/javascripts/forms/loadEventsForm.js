@@ -75,12 +75,18 @@ define('forms/loadEventsForm', function (require) {
 
         if (timeline == null) {
             timeline = timelineService.createTimeline('timeline', options);
-            timeline.onGroupCreated(function (groupName, $group) {
+            timeline.onGroupCreated(function (groupName, $group, $container) {
                 $('#groupSelect').append('<option value="">' + groupName + '</option>');
+                console.log($container);
+                var containerLeftPart = $container.find('.timeline-groups-axis > .timeline-axis-grid')[0];
+                console.log(containerLeftPart);
+
+//                containerLeftPart.append('asdasdasdasd') //  TODO
             });
 
             var newEventCallback = function (event, groupName) {
                 timeline.addEvent(event, groupName);
+
             };
 
             newEventForm.addNewEventSubmitHandler(newEventCallback)
