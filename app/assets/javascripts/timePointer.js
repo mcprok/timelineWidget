@@ -26,13 +26,12 @@ define('timePointer', function (require) {
             $('.js-pointer-show').show();
         });
 
-        var $timelineContent =  $('.timeline-content');
+        var $timelineContent = $('.timeline-content');
         var scrollTimeout = null;
 
         $timelineContent.on('mousewheel', function () {
 
-
-            if(pointerEnabled) {
+            if (pointerEnabled) {
                 if (scrollTimeout) {
                     clearTimeout(scrollTimeout);
                 }
@@ -42,24 +41,21 @@ define('timePointer', function (require) {
                     enablePointer(false);
                 }, 500);
             }
-
-
         });
 
-        $timelineContent.on('mousedown', function(e) {
-            if(pointerEnabled) {
+        $timelineContent.on('mousedown', function (e) {
+            if (pointerEnabled) {
                 disablePointer(false);
             }
 
         });
-        $('body').on('mouseup', function(e) {
 
-            if(pointerEnabled) {
+        $('body').on('mouseup', function (e) {
+
+            if (pointerEnabled) {
                 enablePointer(false);
             }
         });
-
-
     };
 
     var _updatePointerState = function (e) {
@@ -75,8 +71,6 @@ define('timePointer', function (require) {
 
         var leftValue = e.pageX - (boundingBox + groupWidth );
         $('.pointer').css('left', leftValue);
-
-
 
         $('.highlight').removeClass('highlight');
 
@@ -99,8 +93,8 @@ define('timePointer', function (require) {
         var contentWidth = $('.timeline-content').width();
 
         currentlyVisibleItems = {
-            items : new Array(contentWidth),
-            clusters : new Array(contentWidth)
+            items: new Array(contentWidth),
+            clusters: new Array(contentWidth)
         };
 
         for (var i = 0; i < contentWidth; i++) {
@@ -108,15 +102,14 @@ define('timePointer', function (require) {
             currentlyVisibleItems.clusters[i] = [];
         }
 
-
         var items = _getVisibleEvents(interval.start, interval.end, 'items');
-         var clusters = _getVisibleEvents(interval.start, interval.end, 'clusters');
+        var clusters = _getVisibleEvents(interval.start, interval.end, 'clusters');
 
         _addToVisibleItems(items, 'items', contentWidth);
         _addToVisibleItems(clusters, 'clusters', contentWidth);
     };
 
-    var _addToVisibleItems = function(array, type, contentWidth) {
+    var _addToVisibleItems = function (array, type, contentWidth) {
 
         _.each(array, function (currentItem) {
             var item = timeline[type][currentItem.row];
@@ -137,7 +130,7 @@ define('timePointer', function (require) {
         $('.pointer').hide();
         $('body').undelegate('.timeline-frame', 'mousemove', _updatePointerState);
 
-        if(byClick) {
+        if (byClick) {
             pointerEnabled = false;
         }
     };
@@ -149,7 +142,7 @@ define('timePointer', function (require) {
         }
         $pointer.show();
         $('body').delegate('.timeline-frame', 'mousemove', _updatePointerState);
-        if(byClick) {
+        if (byClick) {
             pointerEnabled = true;
         }
     };
