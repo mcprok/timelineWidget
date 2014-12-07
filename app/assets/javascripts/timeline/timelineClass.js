@@ -212,14 +212,18 @@ define('timeline/timelineClass', function (require) {
 
             $('.pointer').show();
             $('body').delegate('.timeline-content','mousemove' ,pointerHandler);
-            self.pointerActive = true;
+            this.pointerActive = true;
         };
 
         this.disablePointer = function() {
 
             $('.pointer').hide();
             $('body').undelegate('.timeline-content','mousemove' ,pointerHandler);
-            self.pointerActive = false;
+            this.pointerActive = false;
+        };
+
+        this.isPointerActive = function() {
+            return this.pointerActive;
         };
 
         if(optionsUsed.pointerActive === true) {
