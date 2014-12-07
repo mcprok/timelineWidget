@@ -1,19 +1,67 @@
 <form id="searchForm" role="form" >
     <label for="searchInput">Search:</label>
     <input type="text" class="form-control" id="searchInput" placeholder="Enter search string">
+    <label for="searchGroupSelect">Grupa:</label>
+    <div>
+        <select multiple class="form-control" id="searchGroupSelect">
+            <option value="0" selected="selected">--ALL--</option>
+        </select>
+    </div>
+    <div>
+        <input type="checkbox" id="searchStartDateOn"/>
+        <label for="searchStartDateDiv">Event start date</label>
+        <div id="searchStartDateDiv">
+            @datepicker("searchStartDate")
+            @timepicker("searchStartTime")
+        </div>
+    </div>
+    <div>
+        <input type="checkbox" id="searchEndDateOn"/>
+        <label for="searchEndDateDiv">Event End date</label>
+        <div id="searchEndDateDiv">
+            @datepicker("searchEndDate")
+            @timepicker("searchEndTime")
+        </div>
+    </div>
     <button class="btn btn-default" type="submit" id="searchAction">Search for events</button>
 </form>
 
 
 <script type="text/javascript">
+
+
 $(function() {
+    $('#searchStartDateOn').change(function (event) {
+        if(event.currentTarget.checked) {
+            $('#searchStartDateDiv').show();
+        } else {
+            $('#searchStartDateDiv').hide();
+        }
+    });
+    $('#searchStartDateDiv').hide();
+
+    $('#searchEndDateOn').change(function (event) {
+        if(event.currentTarget.checked) {
+            $('#searchEndDateDiv').show();
+        } else {
+            $('#searchEndDateDiv').hide();
+        }
+    });
+    $('#searchEndDateDiv').hide();
+
     require(['timeline/timelineService'], function(timelineService) {
 
         $('#searchAction').on('click', function(e) {
             e.preventDefault();
-            var searchString = $('#searchInput' ).val();
-//            var searchGroupName =
-            var searchResults = timelineService.getTimeline('timeline').search(searchString)(searchString);
+            var searchString = $('#searchInput').val();
+            var $groupsChoosen = $('#searchGroupSelect').find("option:selected");
+            var searchGroupsNames = [];
+            _.forEach($groupsChoosen, function(option) {
+               searchGroupsNames.push($(option).html())
+            });
+
+            var searchResults = searchForResults(timelineService, searchString, searchGroupsNames);
+
             var $searchResults = $('#searchResults');
             $searchResults.find("tbody").html("");
 
@@ -32,4 +80,25 @@ $(function() {
         return '<td>'+content+'</td>';
     }
 });
+
+var searchForResults = function(timelineService, searchString, searchGroupsNames) {
+    var searchResults;
+    var options = {};
+    if ( $('#searchStartDateDiv').is(":visible") ) {
+        options["after"] = getDateFromInputs('searchStartDate','searchStartTime');
+    }
+
+    if ( $('#searchEndDateDiv').is(":visible") ) {
+        options["before"] = getDateFromInputs('searchEndDate','searchEndTime');
+    }
+
+    if (_.contains(searchGroupsNames,'--ALL--')) {
+        searchResults = timelineService.getTimeline('timeline').search()(searchString, options);
+    } else {
+        // TODO na pewno tak to ma wyglądać? Pierwszy raz coś takiego widzę
+        options['groups'] = searchGroupsNames;
+        searchResults = timelineService.getTimeline('timeline').search()(searchString, options);
+    }
+    return searchResults;
+};
 </script>
