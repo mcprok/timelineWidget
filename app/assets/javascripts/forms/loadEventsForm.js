@@ -5,7 +5,7 @@ define('forms/loadEventsForm', function (require) {
     var viewSwitcher = require('../switcher');
 
     var newEventForm = require('forms/newEventForm');
-
+    var selectionService = require('timeline/selectionService');
     var timeline = null;
 
     var init = function () {
@@ -86,7 +86,6 @@ define('forms/loadEventsForm', function (require) {
 
             var newEventCallback = function (event, groupName) {
                 timeline.addEvent(event, groupName);
-
             };
 
             newEventForm.addNewEventSubmitHandler(newEventCallback)
@@ -94,6 +93,9 @@ define('forms/loadEventsForm', function (require) {
 
 
         timeline.createGroup(groupName, data);
+        timeline.addEventHandler('select', function () {
+            selectionService.selectCallback(timeline);
+        }, groupName);
     };
 
     return {

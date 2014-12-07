@@ -39,7 +39,6 @@ define('timeline/timelineClass', function (require) {
                 var pointer = new timePointer.Pointer($newTimeline);
                 this.pointersForGroups[groupName] = pointer;
 
-                
                 joinTimelines(this.groups, $newTimeline);
                 $newTimeline.draw(data, optionsUsed);
 
@@ -108,9 +107,12 @@ define('timeline/timelineClass', function (require) {
         };
 
         this.addEventHandler = function (type, callback, groupName) {
+            if (type == null || type.length == 0) {
+                console.error('Cannot add on selection handler - no timeline or data provided');
+            }
             if (groupName != undefined) {
                 if (this.groupExists(groupName)) {
-                    links.events.addListener(groupName, type, callback);
+                    links.events.addListener(this.groups[groupName], type, callback);
                 } else {
                     console.log('Cannot add event. Group doesnt exist: ' + groupName);
                 }
@@ -119,10 +121,6 @@ define('timeline/timelineClass', function (require) {
                     links.events.addListener(container, type, callback);
                 })
             }
-        };
-
-        this.getEventsOnPosition = function (pixelsFromLeft) {
-            // TODO
         };
 
         this.onGroupCreated = function (callback) {
@@ -185,7 +183,7 @@ define('timeline/timelineClass', function (require) {
         //      groups: []
         // }
 
-        this.highlightEvents = function(e) {
+        this.highlightEvents = function (e) {
 
             var $timelineContent = $(e.currentTarget);
             var $frame = $timelineContent.parent();
@@ -195,7 +193,7 @@ define('timeline/timelineClass', function (require) {
 
             var offset = e.pageX - (boundingBoxLeft + groupWidth );
 
-            _.each(this.pointersForGroups, function(pointer, key) {
+            _.each(this.pointersForGroups, function (pointer, key) {
                 pointer.highlightCurrentElements(offset, $timelineContent.width());
             });
 
@@ -203,7 +201,7 @@ define('timeline/timelineClass', function (require) {
         };
 
         var self = this;
-        $('body').delegate('.timeline-content','mousemove', function(e) {
+        $('body').delegate('.timeline-content', 'mousemove', function (e) {
             self.highlightEvents(e);
 
         });
