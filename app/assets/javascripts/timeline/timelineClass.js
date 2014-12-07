@@ -1,4 +1,6 @@
-define('timeline/timelineClass', function () {
+define('timeline/timelineClass', function (require) {
+
+    var timePointer = require('timePointer');
 
     function Timeline(containerId, options) {
 
@@ -12,7 +14,8 @@ define('timeline/timelineClass', function () {
             groupMinHeight: 150,
             groupsOnRight: false,
             style: "dot",
-            hideableGroup: false
+            hideableGroup: false,
+            pointerActive: true
         };
 
         $.extend(optionsUsed, options);
@@ -21,6 +24,7 @@ define('timeline/timelineClass', function () {
         this.groups = {}; // mapa nazwaGrupy : grupa - jeden timeline biblioteczki
         this.onGroupCreatedCallbacks = [];
         this.groupsNextEventId = {};
+        this.pointersForGroups = {}; //nazwaGrupy - pointer;
 
         this.createGroup = function (groupName, data) {
             if (this.canCreateGroup(groupName)) {
@@ -32,8 +36,13 @@ define('timeline/timelineClass', function () {
                 this.$container.append($newGroupWrapper);
                 this.nextGroupId = this.nextGroupId + 1;
                 var $newTimeline = new links.Timeline($newGroupWrapper[0]);
+                var pointer = new timePointer.Pointer($newTimeline);
+                this.pointersForGroups[groupName] = pointer;
+
+                
                 joinTimelines(this.groups, $newTimeline);
                 $newTimeline.draw(data, optionsUsed);
+
                 this.groups[groupName] = $newTimeline;
                 this.groupsNextEventId[groupName] = data.length + 1;
             } else {
@@ -176,6 +185,28 @@ define('timeline/timelineClass', function () {
         //      groups: []
         // }
 
+        this.highlightEvents = function(e) {
+
+            var $timelineContent = $(e.currentTarget);
+            var $frame = $timelineContent.parent();
+            var boundingBoxLeft = $frame.get(0).getBoundingClientRect().left;
+
+            var groupWidth = $($frame.get(0)).find('.timeline-groups-axis').width();
+
+            var offset = e.pageX - (boundingBoxLeft + groupWidth );
+
+            _.each(this.pointersForGroups, function(pointer, key) {
+                pointer.highlightCurrentElements(offset, $timelineContent.width());
+            });
+
+
+        };
+
+        var self = this;
+        $('body').delegate('.timeline-content','mousemove', function(e) {
+            self.highlightEvents(e);
+
+        });
     }
 
     return {

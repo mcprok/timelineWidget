@@ -5,9 +5,8 @@ define('timeline/timelineService', function (require) {
     var alertsService =         require('alerts/alertsService');
     var selectionService =      require('timeline/selectionService');
     var searchService =         require('timeline/searchService');
-    var newEventService =       require('forms/newEventForm');
     var viewSwitcher =          require('switcher');
-    var timePointer =           require('timePointer');
+
 
     var $timeline = null;
     var newEventId = 0;
@@ -48,6 +47,7 @@ define('timeline/timelineService', function (require) {
     var search = function (searchString) {
         return searchService.search(searchString, $timeline.items);
     };
+
 
     return {
         createTimeline: createTimeline,
