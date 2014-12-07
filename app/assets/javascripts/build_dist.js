@@ -8,4 +8,4 @@ requirejs.config({
 
 });
 
-requirejs(['timeline/timelineService']);
+requirejs(['assets/javascripts/timeline/timelineService']);
