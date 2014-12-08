@@ -1,6 +1,6 @@
 define('forms/newEventForm', function(require) {
 
-    var $ = require('jquery');
+
 
     var getDateFromInputs = function (datepickerId, timepickerId) {
 

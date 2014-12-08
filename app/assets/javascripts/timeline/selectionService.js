@@ -1,6 +1,5 @@
 define('timeline/selectionService',function (require) {
 
-    var $ = require('jquery');
     var alertsService = require('alerts/alertsService');
 
     var selectCallback = function (timeline) {

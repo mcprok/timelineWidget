@@ -1,6 +1,5 @@
 define('timeline/timelineService', function (require) {
     
-    var $ = require('jquery');
 
     var alertsService =         require('alerts/alertsService');
     var selectionService =      require('timeline/selectionService');
