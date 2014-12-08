@@ -32,7 +32,7 @@ define('timeline/timelineClass', function (require) {
                     console.log('clearing');
                     this.$container.html('');
                 }
-                var $newGroupWrapper = $('<div id="timelineGroup_' + this.nextGroupId + '"></div>'); // TODO change for multiple
+                var $newGroupWrapper = $('<div id="timelineGroup_' + this.nextGroupId + '"></div>'); // TODO change to enable multiple timelines on one page
                 this.$container.append($newGroupWrapper);
                 this.nextGroupId = this.nextGroupId + 1;
                 var $newTimeline = new links.Timeline($newGroupWrapper[0]);
@@ -151,11 +151,7 @@ define('timeline/timelineClass', function (require) {
             var allGroups = this.groups;
 
             return function (searchString, options) {
-                console.log('In Inner search');
-                console.log(options);
                 $.extend(searchConfig, options);
-                console.log('Final search options:');
-                console.log(searchConfig);
                 var groupsToSearch = [];
 
                 if (searchConfig["groups"].length == 0) {
@@ -169,8 +165,6 @@ define('timeline/timelineClass', function (require) {
                         }
                     });
                 }
-
-                console.log(groupsToSearch);
 
                 var searchResults = [];
                 _.forEach(groupsToSearch, function ($group) {

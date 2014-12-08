@@ -76,10 +76,10 @@ define('forms/loadEventsForm', function (require) {
             timeline = timelineService.createTimeline('timeline', options);
             timeline.onGroupCreated(function (groupName, $group, $container) {
                 $('#groupSelect').append('<option value="">' + groupName + '</option>');
-                console.log($container);
-                var containerLeftPart = $container.find('.timeline-groups-axis > .timeline-axis-grid')[0];
-                console.log(containerLeftPart);
                 $('#searchGroupSelect').append('<option value="">' + groupName + '</option>');
+//                console.log($container);
+//                var containerLeftPart = $container.find('.timeline-groups-axis > .timeline-axis-grid')[0];
+//                console.log(containerLeftPart);
 //                containerLeftPart.append('asdasdasdasd') //  TODO
             });
 
