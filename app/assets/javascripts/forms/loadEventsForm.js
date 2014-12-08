@@ -4,7 +4,7 @@ define('forms/loadEventsForm', function (require) {
     var viewSwitcher = require('../switcher');
 
     var newEventForm = require('forms/newEventForm');
-
+    var selectionService = require('timeline/selectionService');
     var timeline = null;
 
     var init = function () {
@@ -79,13 +79,12 @@ define('forms/loadEventsForm', function (require) {
                 console.log($container);
                 var containerLeftPart = $container.find('.timeline-groups-axis > .timeline-axis-grid')[0];
                 console.log(containerLeftPart);
-
+                $('#searchGroupSelect').append('<option value="">' + groupName + '</option>');
 //                containerLeftPart.append('asdasdasdasd') //  TODO
             });
 
             var newEventCallback = function (event, groupName) {
                 timeline.addEvent(event, groupName);
-
             };
 
             newEventForm.addNewEventSubmitHandler(newEventCallback)
@@ -93,6 +92,9 @@ define('forms/loadEventsForm', function (require) {
 
 
         timeline.createGroup(groupName, data);
+        timeline.addEventHandler('select', function () {
+            selectionService.selectCallback(timeline);
+        }, groupName);
     };
 
     return {

@@ -39,7 +39,6 @@ define('timeline/timelineClass', function (require) {
                 var pointer = new timePointer.Pointer($newTimeline);
                 this.pointersForGroups[groupName] = pointer;
 
-                
                 joinTimelines(this.groups, $newTimeline);
                 $newTimeline.draw(data, optionsUsed);
 
@@ -108,9 +107,12 @@ define('timeline/timelineClass', function (require) {
         };
 
         this.addEventHandler = function (type, callback, groupName) {
+            if (type == null || type.length == 0) {
+                console.error('Cannot add on selection handler - no timeline or data provided');
+            }
             if (groupName != undefined) {
                 if (this.groupExists(groupName)) {
-                    links.events.addListener(groupName, type, callback);
+                    links.events.addListener(this.groups[groupName], type, callback);
                 } else {
                     console.log('Cannot add event. Group doesnt exist: ' + groupName);
                 }
@@ -121,10 +123,6 @@ define('timeline/timelineClass', function (require) {
             }
         };
 
-        this.getEventsOnPosition = function (pixelsFromLeft) {
-            // TODO
-        };
-
         this.onGroupCreated = function (callback) {
             this.onGroupCreatedCallbacks.push(callback);
         };
@@ -133,7 +131,14 @@ define('timeline/timelineClass', function (require) {
             // TODO
         };
 
-        this.search = function (key, options) {
+        function isAfterDateInOptions(searchConfig, item) {
+            return searchConfig["after"] == null || (searchConfig["after"].isDate() && item.start > searchConfig["after"]);
+        }
+        function isBeforeDateInOptions(searchConfig, item) {
+            return searchConfig["before"] == null || (searchConfig["before"].isDate() && item.start < searchConfig["before"]);
+        }
+
+        this.search = function () {
             var searchConfig = {
                 chronological: true,
                 startDate: null,
@@ -145,7 +150,9 @@ define('timeline/timelineClass', function (require) {
 
             return function (searchString, options) {
                 console.log('In Inner search');
+                console.log(options);
                 $.extend(searchConfig, options);
+                console.log('Final search options:');
                 console.log(searchConfig);
                 var groupsToSearch = [];
 
@@ -167,25 +174,25 @@ define('timeline/timelineClass', function (require) {
                 _.forEach(groupsToSearch, function ($group) {
                     for (var i = 0; i < $group.items.length; i++) {
                         var item = $group.items[i];
-                        if (item.content.toLowerCase().indexOf(searchString.toLowerCase()) > -1) {
-                            searchResults.push(item);
+                        if (_.contains(item.content.toLowerCase(), searchString.toLowerCase())) {
+                            if (isAfterDateInOptions(searchConfig, item) && isBeforeDateInOptions(searchConfig, item)) {
+                                searchResults.push(item);
+                            }
                         }
                     }
                 });
-
-                console.log(searchResults);
                 return searchResults;
             }
         };
 
         // options = {
         //      chronological : true/false
-        //      startDate :
-        //      endDate :
+        //      after :
+        //      before :
         //      groups: []
         // }
 
-        this.highlightEvents = function(e) {
+        this.highlightEvents = function (e) {
 
             var $timelineContent = $(e.currentTarget);
             var $frame = $timelineContent.parent();
@@ -195,40 +202,38 @@ define('timeline/timelineClass', function (require) {
 
             var offset = e.pageX - (boundingBoxLeft + groupWidth );
 
-            _.each(this.pointersForGroups, function(pointer, key) {
+            _.each(this.pointersForGroups, function (pointer, key) {
                 pointer.highlightCurrentElements(offset, $timelineContent.width());
             });
-
-
         };
 
         var self = this;
 
-        var pointerHandler = function(e) {
+        var pointerHandler = function (e) {
             self.highlightEvents(e);
         };
 
-        this.enablePointer = function() {
+        this.enablePointer = function () {
 
             $('.pointer').show();
-            $('body').delegate('.timeline-content','mousemove' ,pointerHandler);
+            $('body').delegate('.timeline-content', 'mousemove', pointerHandler);
             this.pointerActive = true;
         };
 
-        this.disablePointer = function() {
+        this.disablePointer = function () {
 
             $('.pointer').hide();
-            $('body').undelegate('.timeline-content','mousemove' ,pointerHandler);
+            $('body').undelegate('.timeline-content', 'mousemove', pointerHandler);
             this.pointerActive = false;
         };
 
-        this.isPointerActive = function() {
+        this.isPointerActive = function () {
             return this.pointerActive;
         };
 
-        if(optionsUsed.pointerActive === true) {
+        if (optionsUsed.pointerActive === true) {
             this.enablePointer();
-        }else {
+        } else {
             this.disablePointer();
         }
 
