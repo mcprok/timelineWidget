@@ -88,8 +88,8 @@ define('timeline/timelineClass', function (require) {
         this.addEvent = function (event, groupName) {
             if (this.groupExists(groupName)) {
                 var $group = this.groups[groupName];
-                event.id = this.groupsNextEventId;
-                this.groupsNextEventId = this.groupsNextEventId + 1;
+                event.id = this.groupsNextEventId[groupName];
+                this.groupsNextEventId[groupName] = this.groupsNextEventId[groupName] + 1;
                 $group.addItem(event, true);
                 $group.redraw();
             } else {
@@ -132,17 +132,19 @@ define('timeline/timelineClass', function (require) {
         };
 
         function isAfterDateInOptions(searchConfig, item) {
-            return searchConfig["after"] == null || (searchConfig["after"].isDate() && item.start > searchConfig["after"]);
+            return searchConfig["after"] == null || (searchConfig["after"] instanceof Date && item.start > searchConfig["after"]);
         }
+
         function isBeforeDateInOptions(searchConfig, item) {
-            return searchConfig["before"] == null || (searchConfig["before"].isDate() && item.start < searchConfig["before"]);
+            var before = searchConfig["before"];
+            return before == null || (before instanceof Date && (item.end != null && item.end < before) || item.start < before);
         }
 
         this.search = function () {
             var searchConfig = {
                 chronological: true,
-                startDate: null,
-                endDate: null,
+                after: null,
+                before: null,
                 groups: []
             };
 

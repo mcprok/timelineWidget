@@ -12,8 +12,7 @@ define('forms/newEventForm', function(require) {
             var newEvent = {
                 start: newEventStartDate,
                 content: $('#contentInput').val(),
-                description: $('#descriptionInput').val(),
-                group: selectedGroup
+                description: $('#descriptionInput').val()
             };
 
             if ($('#newEventEndDateOn').get(0).checked) {

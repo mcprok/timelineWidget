@@ -1,5 +1,5 @@
 var formatedString = function (date) {
-    return date.toString("HH:mm MM-dd-yyyy");
+    return date.toString("HH:mm dd-MM-yyyy");
 };
 
 var getDateFromInputs = function (datepickerId, timepickerId) {
