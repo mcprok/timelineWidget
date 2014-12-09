@@ -312,7 +312,6 @@ links.Timeline.prototype.draw = function(data, options) {
     this.firstDraw = false;
 };
 
-
 /**
  * Set options for the timeline.
  * Timeline must be redrawn afterwards
