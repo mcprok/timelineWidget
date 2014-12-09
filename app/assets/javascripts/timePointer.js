@@ -10,6 +10,8 @@ define('timePointer', function (require) {
         this.$pointer = $('<div class="pointer" style="height:100%; width:1px; background: #e00; display: block; position: absolute;left: 0px;"></div>');
         this.initialized = false;
         this.currentlyVisibleItems = {};
+        this.pointerEnabled = false;
+
         $(this.container).find('.timeline-content').append(this.$pointer);
 
         this.getCurrentlyVisibleItems = function () {
@@ -98,7 +100,6 @@ define('timePointer', function (require) {
             });
         };
 
-
         var self = this;
 
         this.highlightCurrentElements = function(offset, containerSize) {
@@ -122,30 +123,21 @@ define('timePointer', function (require) {
             });
 
         };
-        var disablePointer = function () {
+        this.disablePointer = function (byClick) {
             $('.pointer').hide();
             $('body').undelegate('.timeline-frame', 'mousemove', self._updatePointerState);
-
-
+            if (byClick) {
+                pointerEnabled = false;
+            }
         };
 
-        var enablePointer = function () {
+        this.enablePointer = function (byClick) {
             $('.pointer').show();
             $('body').delegate('.timeline-frame', 'mousemove', self._updatePointerState);
-
+            if (byClick) {
+                pointerEnabled = true;
+            }
         };
-
-        $('.js-pointer-show').on('click', function (e) {
-            enablePointer(true);
-            $(e.currentTarget).hide();
-            $('.js-pointer-hide').show();
-        });
-
-        $('.js-pointer-hide').on('click', function (e) {
-            disablePointer(true);
-            $(e.currentTarget).hide();
-            $('.js-pointer-show').show();
-        });
 
         this._updatePointerState = function (e) {
 
@@ -171,6 +163,39 @@ define('timePointer', function (require) {
             });
 
         };
+
+        $('.js-pointer-show').on('click', function (e) {
+
+            self.enablePointer(true);
+            $(e.currentTarget).hide();
+            $('.js-pointer-hide').show();
+        });
+
+        $('.js-pointer-hide').on('click', function (e) {
+            self.disablePointer(true);
+            $(e.currentTarget).hide();
+            $('.js-pointer-show').show();
+        });
+
+
+        var $timelineContent = $('.timeline-content');
+        var scrollTimeout = null;
+
+        $timelineContent.on('mousewheel', function () {
+
+            if (pointerEnabled) {
+                if (scrollTimeout) {
+                    clearTimeout(scrollTimeout);
+                }
+
+                self.disablePointer(false);
+                scrollTimeout = setTimeout(function () {
+                    self.enablePointer(false);
+                }, 500);
+            }
+        });
+
+
     }
 
     return {
