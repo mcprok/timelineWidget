@@ -34,16 +34,57 @@ define('timeline/timelineClass', function (require) {
                 }
                 var $newGroupWrapper = $('<div id="timelineGroup_' + this.nextGroupId + '"></div>'); // TODO change for multiple
                 this.$container.append($newGroupWrapper);
+                var showGroupButton = $('<div style="text-align: left; padding: 5px; background: #fff; border: 1px solid #bebebe; border-bottom: 0;display: none;" class="js-show-button timelineGroup_' + this.nextGroupId + '"> <a href="#">Show group: <strong>' + groupName + '</strong></a> </div>  ');
+
                 this.nextGroupId = this.nextGroupId + 1;
                 var $newTimeline = new links.Timeline($newGroupWrapper[0]);
                 var pointer = new timePointer.Pointer($newTimeline);
+
                 this.pointersForGroups[groupName] = pointer;
 
                 joinTimelines(this.groups, $newTimeline);
                 $newTimeline.draw(data, optionsUsed);
 
+                var hideButton = $('<div class="js-hide-button" style="position: relative; z-index: 999; background: #fff; color: #000; padding: 3px;"><a href="#">^</a></div>');
+                var $groupAxis = $newGroupWrapper.find('.timeline-groups-axis');
+                $groupAxis.append(hideButton);
+
+                $newGroupWrapper.before(showGroupButton);
+
                 this.groups[groupName] = $newTimeline;
                 this.groupsNextEventId[groupName] = data.length + 1;
+
+
+                if (optionsUsed.pointerActive === true) {
+                    this.enablePointer();
+                } else {
+                    this.disablePointer();
+                }
+
+
+                $('#timeline').delegate('.js-hide-button', 'click', function(e) {
+                    var $wrapper = $(e.currentTarget).parent().parent().parent();
+
+                    $wrapper.hide();
+                    var groupFrameId = $wrapper.get(0).id;
+
+                    var $showButton = $('.' + groupFrameId);
+                    console.log($showButton);
+                    $showButton.attr('data-groupId', groupFrameId);
+                    $showButton.show()
+
+                });
+
+                $('#timeline').delegate('.js-show-button', 'click', function(e) {
+                    var $current = $(e.currentTarget);
+                    var groupFrameId = $current.attr('data-groupId');
+                    $('#' + groupFrameId).show();
+                    $current.hide();
+
+                });
+
+
+
             } else {
                 console.log("cannot create group with such name: " + groupName);
             }
@@ -233,11 +274,8 @@ define('timeline/timelineClass', function (require) {
             return this.pointerActive;
         };
 
-        if (optionsUsed.pointerActive === true) {
-            this.enablePointer();
-        } else {
-            this.disablePointer();
-        }
+
+
 
     }
 

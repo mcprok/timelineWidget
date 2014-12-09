@@ -1873,7 +1873,13 @@ links.Timeline.prototype.repaintGroups = function() {
     for (var i = 0, iMax = Math.min(current, needed); i < iMax; i++) {
         var group = groups[i];
         var label = labels[i];
-        label.innerHTML = this.getGroupName(group);
+
+        var groupName = this.getGroupName(group);
+        if(groupName.length > 10) {
+            groupName = groupName.slice(0,10) + "...";
+        }
+
+        label.innerHTML = groupName;
         label.style.display = '';
     }
 
@@ -1888,7 +1894,9 @@ links.Timeline.prototype.repaintGroups = function() {
         if (options.groupsWidth === undefined) {
             label.style.whiteSpace = "nowrap";
         }
-        label.innerHTML = this.getGroupName(group);
+
+        var groupName =  this.getGroupName(group).slice(0,10) + "...";
+        label.innerHTML = groupName
         frame.appendChild(label);
         labels[i] = label;
 
