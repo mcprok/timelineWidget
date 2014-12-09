@@ -1,30 +1,182 @@
 define('timePointer', function (require) {
 
-    var currentlyVisibleItems = [];
 
-    var frameStart,
-        frameEnd;
-    var initialized = false;
-    var pointerEnabled = false;
+    function Pointer(timeline) {
+        this.timeline = timeline;
+        this.container = timeline.dom.container;
+        this.visibleItems = {};
+        this.start = timeline.start;
+        this.end = timeline.end;
+        this.$pointer = $('<div class="pointer" style="height:100%; width:1px; background: #e00; display: block; position: absolute;left: 0px;"></div>');
+        this.initialized = false;
+        this.currentlyVisibleItems = {};
+        this.pointerEnabled = false;
 
-    var timeline;
-    var init = function (globalTimeline) {
-        timeline = globalTimeline;
+        $(this.container).find('.timeline-content').append(this.$pointer);
 
-        frameStart = timeline.start;
-        frameEnd = timeline.end;
+        this.getCurrentlyVisibleItems = function () {
+            if (this._isResized()) {
+                this._onResizeAction();
+                this.initialized = true;
+            }
+
+            return this.currentlyVisibleItems;
+        };
+
+        this._isResized = function () {
+            return !this.initialized || (this.start != this.timeline.start || this.end != this.timeline.end);
+        };
+
+        this._onResizeAction = function () {
+            this.start = this.timeline.start;
+            this.end = this.timeline.end;
+
+            this._updateVisibleItemsCache();
+        };
+
+        this._updateVisibleItemsCache = function () {
+            var contentWidth = $(this.container).find('.timeline-content').width();
+
+            this.currentlyVisibleItems = {
+                items: new Array(contentWidth),
+                clusters: new Array(contentWidth)
+            };
+
+            for (var i = 0; i < contentWidth; i++) {
+                this.currentlyVisibleItems.items[i] = [];
+                this.currentlyVisibleItems.clusters[i] = [];
+            }
+
+            var items = this._calculateVisibleEvents('items');
+            var clusters = this._calculateVisibleEvents('clusters');
+
+            this._addToVisibleItems(items, 'items', contentWidth);
+            this._addToVisibleItems(clusters, 'clusters', contentWidth);
+        };
+
+
+        this._calculateVisibleEvents = function (type) {
+            var start = this.start;
+            var end = this.end;
+            var items = this.timeline[type];
+
+            var itemsInRange = [];
+
+            if (items) {
+                for (var i = 0, iMax = items.length; i < iMax; i++) {
+                    var item = items[i];
+
+                    if (item.end) {
+                        // Time range object
+                        if (item.start <= start && item.end > start) {
+
+                            itemsInRange.push({"row": i});
+
+                        } else if (item.start <= end) {
+                            itemsInRange.push({"row": i});
+                        }
+
+                    } else {
+                        // Point object
+                        if (start <= item.start && item.start <= end) {
+                            itemsInRange.push({"row": i});
+                        }
+                    }
+                }
+            }
+
+            return itemsInRange;
+        };
+
+        this._addToVisibleItems = function (array, type, contentWidth) {
+            var self = this;
+            _.each(array, function (currentItem) {
+                var item = timeline[type][currentItem.row];
+                var start = item.left > 0 ? Math.floor(item.left) : 0;
+                var end = item.right > 0 ? Math.ceil(item.right) : 0;
+                for (var i = start; i < end && i < contentWidth; i++) {
+                    self.currentlyVisibleItems[type][i].push(currentItem.row);
+                }
+            });
+        };
+
+        var self = this;
+
+        this.highlightCurrentElements = function(offset, containerSize) {
+            if(self._isResized()) {
+                self._onResizeAction();
+            }
+            var selfWidthContainer = $(self.container).find('.timeline-content').width();
+
+            offset = offset * ( selfWidthContainer / containerSize);
+
+            $(self.container).find('.pointer').css('left', offset);
+
+            $(self.container).find('.highlight').removeClass('highlight');
+
+            _.each(self.currentlyVisibleItems.items[Math.floor(offset)], function (itemIndex) {
+                $(self.timeline.items[itemIndex].dom).addClass('highlight');
+            });
+
+            _.each(self.currentlyVisibleItems.clusters[Math.floor(offset)], function (itemIndex) {
+                $(self.timeline.clusters[itemIndex].dom).addClass('highlight');
+            });
+
+        };
+        this.disablePointer = function (byClick) {
+            $('.pointer').hide();
+            $('body').undelegate('.timeline-frame', 'mousemove', self._updatePointerState);
+            if (byClick) {
+                pointerEnabled = false;
+            }
+        };
+
+        this.enablePointer = function (byClick) {
+            $('.pointer').show();
+            $('body').delegate('.timeline-frame', 'mousemove', self._updatePointerState);
+            if (byClick) {
+                pointerEnabled = true;
+            }
+        };
+
+        this._updatePointerState = function (e) {
+
+            if(self._isResized()) {
+                self._onResizeAction();
+            }
+
+            var $timelineFrame = $('.timeline-frame');
+            var boundingBox = $timelineFrame.get(0).getBoundingClientRect().left;
+            var groupWidth = $('.timeline-groups-axis').width();
+
+            var leftValue = e.pageX - (boundingBox + groupWidth);
+            $('.pointer').css('left', leftValue);
+
+            $('.highlight').removeClass('highlight');
+
+            _.each(self.currentlyVisibleItems.items[leftValue], function (itemIndex) {
+                $(self.timeline.items[itemIndex].dom).addClass('highlight');
+            });
+
+            _.each(self.currentlyVisibleItems.clusters[leftValue], function (itemIndex) {
+                $(self.timeline.clusters[itemIndex].dom).addClass('highlight');
+            });
+
+        };
 
         $('.js-pointer-show').on('click', function (e) {
-            enablePointer(true);
+
+            self.enablePointer(true);
             $(e.currentTarget).hide();
             $('.js-pointer-hide').show();
         });
 
         $('.js-pointer-hide').on('click', function (e) {
-            disablePointer(true);
+            self.disablePointer(true);
             $(e.currentTarget).hide();
             $('.js-pointer-show').show();
         });
+
 
         var $timelineContent = $('.timeline-content');
         var scrollTimeout = null;
@@ -36,148 +188,17 @@ define('timePointer', function (require) {
                     clearTimeout(scrollTimeout);
                 }
 
-                disablePointer(false);
+                self.disablePointer(false);
                 scrollTimeout = setTimeout(function () {
-                    enablePointer(false);
+                    self.enablePointer(false);
                 }, 500);
             }
         });
 
-        $timelineContent.on('mousedown', function (e) {
-            if (pointerEnabled) {
-                disablePointer(false);
-            }
 
-        });
-
-        $('body').on('mouseup', function (e) {
-
-            if (pointerEnabled) {
-                enablePointer(false);
-            }
-        });
-    };
-
-    var _updatePointerState = function (e) {
-
-        if (_checkResize()) {
-            initialized = true;
-            _updateVisibleItemsCache();
-        }
-
-        var $timelineFrame = $('.timeline-frame');
-        var boundingBox = $timelineFrame.get(0).getBoundingClientRect().left;
-        var groupWidth = $('.timeline-groups-axis').width();
-
-        var leftValue = e.pageX - (boundingBox + groupWidth );
-        $('.pointer').css('left', leftValue);
-
-        $('.highlight').removeClass('highlight');
-
-        _.each(currentlyVisibleItems.items[leftValue], function (itemIndex) {
-            $(timeline.items[itemIndex].dom).addClass('highlight');
-        });
-
-        _.each(currentlyVisibleItems.clusters[leftValue], function (itemIndex) {
-            $(timeline.clusters[itemIndex].dom).addClass('highlight');
-        });
-
-    };
-
-    var _checkResize = function () {
-        return !initialized || !(frameStart == timeline.start && frameEnd == timeline.end);
-    };
-
-    var _updateVisibleItemsCache = function () {
-        var interval = timeline.getVisibleChartRange();
-        var contentWidth = $('.timeline-content').width();
-
-        currentlyVisibleItems = {
-            items: new Array(contentWidth),
-            clusters: new Array(contentWidth)
-        };
-
-        for (var i = 0; i < contentWidth; i++) {
-            currentlyVisibleItems.items[i] = [];
-            currentlyVisibleItems.clusters[i] = [];
-        }
-
-        var items = _getVisibleEvents(interval.start, interval.end, 'items');
-        var clusters = _getVisibleEvents(interval.start, interval.end, 'clusters');
-
-        _addToVisibleItems(items, 'items', contentWidth);
-        _addToVisibleItems(clusters, 'clusters', contentWidth);
-    };
-
-    var _addToVisibleItems = function (array, type, contentWidth) {
-
-        _.each(array, function (currentItem) {
-            var item = timeline[type][currentItem.row];
-            var start = item.left > 0 ? Math.floor(item.left) : 0;
-            var end = item.right > 0 ? Math.ceil(item.right) : 0;
-            for (var i = start; i < end && i < contentWidth; i++) {
-                currentlyVisibleItems[type][i].push(currentItem.row);
-            }
-        });
-    };
-
-    var _addPointerToTimeline = function () {
-        var pointer = '<div class="pointer" style="height:100%; width:1px; background: #e00; display: block; position: absolute;left: 0px;"></div>';
-        $('.timeline-content').append($(pointer));
-    };
-
-    var disablePointer = function (byClick) {
-        $('.pointer').hide();
-        $('body').undelegate('.timeline-frame', 'mousemove', _updatePointerState);
-
-        if (byClick) {
-            pointerEnabled = false;
-        }
-    };
-
-    var enablePointer = function (byClick) {
-        var $pointer = $('.pointer');
-        if ($pointer.length === 0) {
-            _addPointerToTimeline();
-        }
-        $pointer.show();
-        $('body').delegate('.timeline-frame', 'mousemove', _updatePointerState);
-        if (byClick) {
-            pointerEnabled = true;
-        }
-    };
-
-    var _getVisibleEvents = function (start, end, type) {
-        var items = timeline[type];
-        var itemsInRange = [];
-
-        if (items) {
-            for (var i = 0, iMax = items.length; i < iMax; i++) {
-                var item = items[i];
-
-                if (item.end) {
-                    // Time range object
-                    if (item.start <= start && item.end > start) {
-
-                        itemsInRange.push({"row": i});
-
-                    } else if (item.start <= end) {
-                        itemsInRange.push({"row": i});
-                    }
-
-                } else {
-                    // Point object
-                    if (start <= item.start && item.start <= end) {
-                        itemsInRange.push({"row": i});
-                    }
-                }
-            }
-        }
-
-        return itemsInRange;
-    };
+    }
 
     return {
-        init: init
+        Pointer : Pointer
     };
 });

@@ -1,4 +1,4 @@
-define('timeline/timelineService', function (require) {
+define('timeline/timelineService',function (require) {
     var alertsService = require('alerts/alertsService');
     var selectionService = require('timeline/selectionService');
     var newEventService = require('forms/newEventForm');
@@ -11,13 +11,16 @@ define('timeline/timelineService', function (require) {
 
     var hiddenGroups = {};
 
+    var pointer;
     var createTimeline = function (containerId, data, options) {
 
         var container = $('#' + containerId)[0];
         if ($timeline == null) {
             $timeline = new links.Timeline(container);
             $timeline.draw(data, options);
-            timePointer.init($timeline);
+            pointer = new timePointer.Pointer($timeline);
+
+
 
         } else {
             $timeline.addItems(data);
