@@ -91,7 +91,6 @@ define('timeline/timelineClass', function (require) {
                 event.id = this.groupsNextEventId[groupName];
                 this.groupsNextEventId[groupName] = this.groupsNextEventId[groupName] + 1;
                 $group.addItem(event, true);
-                $group.redraw();
             } else {
                 console.log('group doesnt exist: ' + groupName);
             }

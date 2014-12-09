@@ -66,8 +66,8 @@ $(function() {
             $searchResults.find("tbody").html("");
 
             _.each(searchResults, function(item) {
-                var itemStartDate = createCellString(formatedString(item.start));
-                var itemEndDate = createCellString(formatedString(item.end));
+                var itemStartDate = createCellString(formattedString(item.start));
+                var itemEndDate = createCellString(formattedString(item.end));
                 var itemGroup = createCellString(item.group.content);
                 var itemContent = createCellString(item.content);
                 var tableRow = $('<tr>' + itemContent + itemStartDate +itemEndDate+ itemGroup + $('</tr>'));
