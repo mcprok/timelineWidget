@@ -8,14 +8,16 @@ define('timeline/timelineService',function (require) {
 
     var $timeline = null;
     var newEventId = 0;
-
+    var pointer;
     var createTimeline = function (containerId, data, options) {
 
         var container = $('#' + containerId)[0];
         if ( $timeline == null) {
             $timeline = new links.Timeline(container);
             $timeline.draw(data, options);
-            timePointer.init($timeline);
+            pointer = new timePointer.Pointer($timeline);
+
+
 
         } else {
             $timeline.addItems(data);
