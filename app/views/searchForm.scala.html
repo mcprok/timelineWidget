@@ -93,11 +93,11 @@ var searchForResults = function(timelineService, searchString, searchGroupsNames
     }
 
     if (_.contains(searchGroupsNames,'--ALL--')) {
-        searchResults = timelineService.getTimeline('timeline').search()(searchString, options);
+        searchResults = timelineService.getTimeline('timeline').search(searchString, options);
     } else {
         // TODO na pewno tak to ma wyglądać? Pierwszy raz coś takiego widzę
         options['groups'] = searchGroupsNames;
-        searchResults = timelineService.getTimeline('timeline').search()(searchString, options);
+        searchResults = timelineService.getTimeline('timeline').search(searchString, options);
     }
     return searchResults;
 };

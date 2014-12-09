@@ -188,16 +188,8 @@ define('timeline/timelineClass', function (require) {
             // TODO
         };
 
-        function isAfterDateInOptions(searchConfig, item) {
-            return searchConfig["after"] == null || (searchConfig["after"] instanceof Date && item.start > searchConfig["after"]);
-        }
 
-        function isBeforeDateInOptions(searchConfig, item) {
-            var before = searchConfig["before"];
-            return before == null || (before instanceof Date && (item.end != null && item.end < before) || item.start < before);
-        }
-
-        this.search = function () {
+        this.search = (function (self) {
             var searchConfig = {
                 chronological: true,
                 after: null,
@@ -205,7 +197,16 @@ define('timeline/timelineClass', function (require) {
                 groups: []
             };
 
-            var allGroups = this.groups;
+            var allGroups = self.groups;
+
+            function isAfterDateInOptions(searchConfig, item) {
+                return searchConfig["after"] == null || (searchConfig["after"] instanceof Date && item.start > searchConfig["after"]);
+            }
+
+            function isBeforeDateInOptions(searchConfig, item) {
+                var before = searchConfig["before"];
+                return before == null || (before instanceof Date && (item.end != null && item.end < before) || item.start < before);
+            }
 
             return function (searchString, options) {
                 console.log('In Inner search');
@@ -242,14 +243,7 @@ define('timeline/timelineClass', function (require) {
                 });
                 return searchResults;
             }
-        };
-
-        // options = {
-        //      chronological : true/false
-        //      after :
-        //      before :
-        //      groups: []
-        // }
+        })(this);
 
         this.highlightEvents = function (e) {
 
