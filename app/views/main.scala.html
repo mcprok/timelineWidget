@@ -84,6 +84,10 @@
                     <button class="js-pointer-show">Show pointer</button>
                     <button class="js-pointer-hide" style="display: none;">Hide pointer</button>
 
+                    <div>
+                        <button id="stupidHide">hide</button>
+                        <button id="stupidShow">Show</button>
+                    </div>
                     <div id="timeline">You have no timelines loaded.</div>
                 </div>
             </div>
@@ -170,6 +174,15 @@
     $(function() {
         require(['timeline/timelineService','forms/loadEventsForm','forms/newEventForm', 'switcher'],
         function(timelineService, loadEventsForm, newEventForm, switcher) {
+
+            $('#stupidHide' ).on('click', function ( ) {
+                timelineService.hideGroup("12");
+            });
+
+            $('#stupidShow' ).on('click', function ( ) {
+                timelineService.showGroup("12");
+            });
+
             switcher.init();
 
             loadEventsForm.init();
