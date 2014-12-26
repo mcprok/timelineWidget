@@ -138,6 +138,7 @@ define('timeline/timelineClass', function (require) {
                 groups: []
             };
             var timelineObj = self.$timelineObj;
+            var hiddenGroups = self.hiddenGroups;
 
             function isAfterDateInOptions(searchConfig, item) {
                 return searchConfig["after"] == null || (searchConfig["after"] instanceof Date && item.start > searchConfig["after"]);
@@ -171,6 +172,17 @@ define('timeline/timelineClass', function (require) {
                         }
                     }
                 }
+                _.forEach(hiddenGroups, function (groupItems) {
+                    for (var i = 0; i < groupItems.length; i++) {
+                        var item = groupItems[i];
+                        if (_.contains(item.content.toLowerCase(), searchString.toLowerCase())) {
+                            if (datesCriteriaMatches(item) && groupNameMatches(item, groupsToSearch)) {
+                                searchResults.push(item);
+                            }
+                        }
+                    }
+                });
+
                 return searchResults;
             }
         })(this);
