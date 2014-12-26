@@ -21,10 +21,17 @@ define('timeline/timelineClass', function (require) {
         $.extend(optionsUsed, options);
         this.nextGroupId = 1;
         this.$container = $('#' + containerId);
+
         this.groups = {}; // mapa nazwaGrupy : grupa - jeden timeline biblioteczki
-        this.onGroupCreatedCallbacks = [];
+        this.$timeline = null;
+        this.$timelineObj = {};
+        this.pointer = null;
+
         this.groupsNextEventId = {};
+        this.nextEventId = 0;
+
         this.pointersForGroups = {}; //nazwaGrupy - pointer;
+        this.onGroupCreatedCallbacks = [];
 
         this.createGroup = function (groupName, data) {
             if (this.canCreateGroup(groupName)) {
@@ -32,29 +39,26 @@ define('timeline/timelineClass', function (require) {
                     console.log('clearing');
                     this.$container.html('');
                 }
-                var $newGroupWrapper = $('<div id="timelineGroup_' + this.nextGroupId + '" data-groupName="' +  groupName + '" ></div>'); // TODO change for multiple
-                this.$container.append($newGroupWrapper);
+
+                if (this.$timeline == null) {
+                    var $newGroupWrapper = $('<div id="timelineGroup_' + this.nextGroupId + '" data-groupName="' + groupName + '" ></div>'); // TODO change for multiple
+                    this.$container.append($newGroupWrapper);
+                    this.$timeline = new links.Timeline($newGroupWrapper[0]);
+                    this.$timelineObj['main'] = this.$timeline;
+
+                    this.pointer = new timePointer.Pointer(this.$timeline);
+
+                    this.$timeline.draw(data, optionsUsed);
+
+                } else {
+                    this.$timeline.addItems(data);
+                    this.$timeline.redraw();
+                }
+
                 this.nextGroupId = this.nextGroupId + 1;
 
-                var $newTimeline = new links.Timeline($newGroupWrapper[0]);
-                var pointer = new timePointer.Pointer($newTimeline);
-                this.pointersForGroups[groupName] = pointer;
-
-                joinTimelines(this.groups, $newTimeline);
-
-                $newTimeline.draw(data, optionsUsed);
-                var showButton = $('<div style="position: relative; display: none; z-index: 999; background: #fff; color: #000; padding: 3px;" class="js-show-button"> <a href="#">v</a> </div>  ');
-                var hideButton = $('<div class="js-hide-button" style="position: relative; z-index: 999; background: #fff; color: #000; padding: 3px;"><a href="#">^</a></div>');
-                var deleteButton = $('<div class="js-delete-group" style="position: absolute; bottom: 3px; width: 100%; z-index: 999; background: #fff; color: #000; padding: 3px;"><a href="#">X</a></div>');
-
-                var $groupAxis = $newGroupWrapper.find('.timeline-groups-axis');
-                $groupAxis.append(hideButton);
-                $groupAxis.append(showButton);
-                $groupAxis.append(deleteButton);
-
-                this.groups[groupName] = $newTimeline;
                 this.groupsNextEventId[groupName] = data.length + 1;
-
+                this.nextEventId = data.length + 1;
 
                 if (optionsUsed.pointerActive === true) {
                     this.enablePointer();
@@ -62,65 +66,11 @@ define('timeline/timelineClass', function (require) {
                     this.disablePointer();
                 }
 
-                var self = this;
-                $('#timeline').delegate('.js-hide-button', 'click', function(e) {
-                    var $wrapper = $(e.currentTarget).parent().parent();
-
-                    $wrapper.css({
-                        overflow : 'hidden',
-                        maxHeight : 50
-                    });
-
-                    $wrapper.find('.js-show-button').show();
-                    $(e.currentTarget).hide();
-
-                });
-
-                $('#timeline').delegate('.js-show-button', 'click', function(e) {
-                    var $wrapper = $(e.currentTarget).parent().parent();
-
-                    $wrapper.css({
-
-                        maxHeight : 'none'
-                    });
-
-                    $wrapper.find('.js-hide-button').show();
-                    $(e.currentTarget).hide();
-
-                });
-
-                $('#timeline').delegate('.js-delete-group', 'click', function(e) {
-                    var $wrapper = $(e.currentTarget).parent().parent().parent();
-                    var groupName = $wrapper.attr('data-groupName');
-
-                    $wrapper.remove();
-                    delete self.groups[groupName];
-                });
-
-
-
+                this.fireOnGroupCreatedCallbacks(groupName, this.$timeline, $newGroupWrapper);
             } else {
                 console.log("cannot create group with such name: " + groupName);
             }
-
-            this.fireOnGroupCreatedCallbacks(groupName, $newTimeline, $newGroupWrapper);
         };
-
-        function joinTimelines(oldTimelines, $newTimeline) {
-            _.forEach(oldTimelines, function (timeline) {
-                console.log(timeline);
-                links.events.addListener(timeline, 'rangechange', function () {
-                    var range = timeline.getVisibleChartRange();
-                    $newTimeline.setVisibleChartRange(range.start, range.end);
-                });
-            });
-            links.events.addListener($newTimeline, 'rangechange', function () {
-                var range = $newTimeline.getVisibleChartRange();
-                _.forEach(oldTimelines, function (group) {
-                    group.setVisibleChartRange(range.start, range.end);
-                });
-            });
-        }
 
         this.fireOnGroupCreatedCallbacks = function (groupName, $group, $container) {
             _.forEach(this.onGroupCreatedCallbacks, function (callback) {
@@ -133,7 +83,7 @@ define('timeline/timelineClass', function (require) {
         };
 
         this.groupExists = function (groupName) {
-            return this.groups.hasOwnProperty(groupName);
+            return this.groups.hasOwnProperty(groupName); // TODO remove
         };
 
         this.deleteGroup = function (groupName) {
@@ -141,15 +91,12 @@ define('timeline/timelineClass', function (require) {
         };
 
         this.addEvent = function (event, groupName) {
-            if (this.groupExists(groupName)) {
-                var $group = this.groups[groupName];
-                event.id = this.groupsNextEventId[groupName];
-                this.groupsNextEventId[groupName] = this.groupsNextEventId[groupName] + 1;
-                $group.addItem(event, true);
-                $group.redraw();
-            } else {
-                console.log('group doesnt exist: ' + groupName);
-            }
+            event.group = groupName;
+            event.geo = [19.941002, 50.0611];
+            event.location = "Klub RE, Kraków, Poland";
+            this.nextEventId = this.nextEventId + 1;
+            this.$timeline.addItems([event]);
+            this.$timeline.redraw();
         };
 
         this.getGroup = function (groupName) {
@@ -161,21 +108,14 @@ define('timeline/timelineClass', function (require) {
             }
         };
 
-        this.addEventHandler = function (type, callback, groupName) {
+        this.addEventHandler = function (type, callback) {
             if (type == null || type.length == 0) {
                 console.error('Cannot add on selection handler - no timeline or data provided');
             }
-            if (groupName != undefined) {
-                if (this.groupExists(groupName)) {
-                    links.events.addListener(this.groups[groupName], type, callback);
-                } else {
-                    console.log('Cannot add event. Group doesnt exist: ' + groupName);
-                }
-            } else {
-                _.forEach(this.groups, function (container) {
-                    links.events.addListener(container, type, callback);
-                })
-            }
+            console.log('adding callback');
+            console.log(type);
+            console.log(this.$timeline);
+            links.events.addListener(this.$timeline, type, callback);
         };
 
         this.onGroupCreated = function (callback) {
@@ -186,7 +126,6 @@ define('timeline/timelineClass', function (require) {
             // TODO
         };
 
-
         this.search = (function (self) {
             var searchConfig = {
                 chronological: true,
@@ -194,8 +133,7 @@ define('timeline/timelineClass', function (require) {
                 before: null,
                 groups: []
             };
-
-            var allGroups = self.groups;
+            var timelineObj = self.$timelineObj;
 
             function isAfterDateInOptions(searchConfig, item) {
                 return searchConfig["after"] == null || (searchConfig["after"] instanceof Date && item.start > searchConfig["after"]);
@@ -206,39 +144,29 @@ define('timeline/timelineClass', function (require) {
                 return before == null || (before instanceof Date && (item.end != null && item.end < before) || item.start < before);
             }
 
+            function datesCriteriaMatches(item) {
+                return isAfterDateInOptions(searchConfig, item) && isBeforeDateInOptions(searchConfig, item);
+            }
+
+            function groupNameMatches(item, groupsToSearch) {
+                return groupsToSearch.length == 0 || _.contains(groupsToSearch, item.group) || (item.hasOwnProperty('group') && _.contains(groupsToSearch, item.group['content']));
+            }
+
             return function (searchString, options) {
-                console.log('In Inner search');
-                console.log(options);
+                searchConfig.groups = [];
                 $.extend(searchConfig, options);
-                console.log('Final search options:');
-                console.log(searchConfig);
-                var groupsToSearch = [];
-
-                if (searchConfig["groups"].length == 0) {
-                    _.forEach(allGroups, function (group) {
-                        groupsToSearch.push(group);
-                    });
-                } else {
-                    _.forEach(searchConfig["groups"], function (groupName) {
-                        if (allGroups.hasOwnProperty(groupName)) {
-                            groupsToSearch.push(allGroups[groupName]);
-                        }
-                    });
-                }
-
-                console.log(groupsToSearch);
+                var timeline = timelineObj['main'];
+                var groupsToSearch = searchConfig["groups"];
 
                 var searchResults = [];
-                _.forEach(groupsToSearch, function ($group) {
-                    for (var i = 0; i < $group.items.length; i++) {
-                        var item = $group.items[i];
-                        if (_.contains(item.content.toLowerCase(), searchString.toLowerCase())) {
-                            if (isAfterDateInOptions(searchConfig, item) && isBeforeDateInOptions(searchConfig, item)) {
-                                searchResults.push(item);
-                            }
+                for (var i = 0; i < timeline.items.length; i++) {
+                    var item = timeline.items[i];
+                    if (_.contains(item.content.toLowerCase(), searchString.toLowerCase())) {
+                        if (datesCriteriaMatches(item) && groupNameMatches(item, groupsToSearch)) {
+                            searchResults.push(item);
                         }
                     }
-                });
+                }
                 return searchResults;
             }
         })(this);
@@ -253,9 +181,7 @@ define('timeline/timelineClass', function (require) {
 
             var offset = e.pageX - (boundingBoxLeft + groupWidth );
 
-            _.each(this.pointersForGroups, function (pointer, key) {
-                pointer.highlightCurrentElements(offset, $timelineContent.width());
-            });
+            this.pointer.highlightCurrentElements(offset, $timelineContent.width());
         };
 
         var self = this;
@@ -281,8 +207,6 @@ define('timeline/timelineClass', function (require) {
         this.isPointerActive = function () {
             return this.pointerActive;
         };
-
-
 
 
     }

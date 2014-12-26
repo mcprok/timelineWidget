@@ -42,18 +42,9 @@ define('timeline/timelineService', function (require) {
         links.events.addListener($timeline, type, callback);
     };
 
-
-    var search = function (searchString) {
-        return searchService.search(searchString, $timeline.items);
-    };
-
     return {
         createTimeline: createTimeline,
-//        addNewEvent: addNewEvent,
         getTimeline: getTimeline
-//        addEventHandler: addEventHandler,
-//        canCreateGroup: canCreateGroup,
-//        search: search
     };
 
 });
