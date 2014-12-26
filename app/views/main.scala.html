@@ -82,7 +82,12 @@
                 <div class="col-lg-12 ">
                     <h2>Timelines</h2>
 
+                    <label for="groupHideShow">Grupa:</label> <select id="groupHideShow"></select>
+                    <button id="groupShowButton">Show</button>
+                    <button id="groupHideButton">Hide</button>
+                    <button id="groupDeleteButton">Delete</button>
                     <div id="timeline">You have no timelines loaded.</div>
+
                 </div>
             </div>
         </section>
@@ -170,6 +175,22 @@
         function(timelineService, loadEventsForm, newEventForm, switcher) {
             switcher.init();
             loadEventsForm.init();
+
+            $('#groupHideButton').on('click', function() {
+                var timeline = timelineService.getTimeline('timeline');
+                if ( timeline != null) {
+                    var $groupChoosen = $('#groupHideShow').find("option:selected");
+                    timeline.hideGroup($($groupChoosen ).html());
+                }
+            });
+
+            $('#groupShowButton').on('click', function() {
+                var timeline = timelineService.getTimeline('timeline');
+                if ( timeline != null) {
+                    var $groupChoosen = $('#groupHideShow').find("option:selected");
+                    timeline.showGroup($($groupChoosen ).html());
+                }
+            });
 
 //            var onNewEventAdded = function(newEvent) {
 //                timelineService.addNewEvent(newEvent);

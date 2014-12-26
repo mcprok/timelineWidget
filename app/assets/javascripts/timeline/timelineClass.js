@@ -30,8 +30,9 @@ define('timeline/timelineClass', function (require) {
         this.groupsNextEventId = {};
         this.nextEventId = 0;
 
-        this.pointersForGroups = {}; //nazwaGrupy - pointer;
         this.onGroupCreatedCallbacks = [];
+
+        this.hiddenGroups = {};
 
         this.createGroup = function (groupName, data) {
             if (this.canCreateGroup(groupName)) {
@@ -206,6 +207,61 @@ define('timeline/timelineClass', function (require) {
 
         this.isPointerActive = function () {
             return this.pointerActive;
+        };
+
+        this.hideGroup = function (groupName) {
+
+            if ( this.hiddenGroups.hasOwnProperty(groupName)) {
+                console.log('Cannot hide already hidden group: ' + groupName);
+                return;
+            }
+
+            var items = this.$timeline.items;
+
+            var remaining = [];
+            var toHide = [];
+
+            for (var i = 0; i < items.length; i++) {
+                var item = items[i];
+                if (item.group.content != groupName) {
+                    remaining.push(item);
+                } else {
+                    toHide.push(item);
+                }
+            }
+
+            var newGroups = [];
+            _.forEach(this.$timeline.groups, function(group) {
+                console.log(group);
+                if ( group.content != groupName ) {
+                    newGroups.push(group);
+                }
+            });
+            this.$timeline.groups = newGroups;
+            this.hiddenGroups[groupName] = toHide;
+
+            _.forEach(remaining, function(event) {
+                event.group = event.group.content;
+            });
+
+            this.$timeline.setData(remaining);
+            this.$timeline.repaintGroups();
+            console.log(remaining);
+            this.$timeline.redraw();
+        };
+
+        this.showGroup = function (groupName) {
+            if (this.hiddenGroups.hasOwnProperty(groupName)) {
+                var newElements = this.hiddenGroups[groupName];
+                delete this.hiddenGroups[groupName];
+                _.forEach(newElements, function(event) {
+                    event.group = groupName;
+                });
+                this.$timeline.addItems(newElements);
+                this.$timeline.redraw();
+            } else {
+                console.log('Hidden group doesnt not exist: ' + groupName);
+            }
         };
 
 
