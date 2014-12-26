@@ -31,6 +31,7 @@ define('timeline/timelineClass', function (require) {
         this.nextEventId = 0;
 
         this.onGroupCreatedCallbacks = [];
+        this.onGroupDeletedCallbacks = [];
 
         this.hiddenGroups = {};
 
@@ -79,16 +80,18 @@ define('timeline/timelineClass', function (require) {
             });
         };
 
+        this.fireOnGroupDeletedCallbacks = function (groupName, $group, $container) {
+            _.forEach(this.onGroupDeletedCallbacks, function (callback) {
+                callback(groupName, $group, $container);
+            });
+        };
+
         this.canCreateGroup = function (groupName) {
             return !this.groupExists(groupName);
         };
 
         this.groupExists = function (groupName) {
             return this.groups.hasOwnProperty(groupName); // TODO remove
-        };
-
-        this.deleteGroup = function (groupName) {
-            // TODO
         };
 
         this.addEvent = function (event, groupName) {
@@ -124,7 +127,7 @@ define('timeline/timelineClass', function (require) {
         };
 
         this.onGroupDeleted = function (callback) {
-            // TODO
+            this.onGroupDeletedCallbacks.push(callback);
         };
 
         this.search = (function (self) {
@@ -211,7 +214,7 @@ define('timeline/timelineClass', function (require) {
 
         this.hideGroup = function (groupName) {
 
-            if ( this.hiddenGroups.hasOwnProperty(groupName)) {
+            if (this.hiddenGroups.hasOwnProperty(groupName)) {
                 console.log('Cannot hide already hidden group: ' + groupName);
                 return;
             }
@@ -231,16 +234,16 @@ define('timeline/timelineClass', function (require) {
             }
 
             var newGroups = [];
-            _.forEach(this.$timeline.groups, function(group) {
+            _.forEach(this.$timeline.groups, function (group) {
                 console.log(group);
-                if ( group.content != groupName ) {
+                if (group.content != groupName) {
                     newGroups.push(group);
                 }
             });
             this.$timeline.groups = newGroups;
             this.hiddenGroups[groupName] = toHide;
 
-            _.forEach(remaining, function(event) {
+            _.forEach(remaining, function (event) {
                 event.group = event.group.content;
             });
 
@@ -254,7 +257,7 @@ define('timeline/timelineClass', function (require) {
             if (this.hiddenGroups.hasOwnProperty(groupName)) {
                 var newElements = this.hiddenGroups[groupName];
                 delete this.hiddenGroups[groupName];
-                _.forEach(newElements, function(event) {
+                _.forEach(newElements, function (event) {
                     event.group = groupName;
                 });
                 this.$timeline.addItems(newElements);
@@ -264,6 +267,16 @@ define('timeline/timelineClass', function (require) {
             }
         };
 
+        this.deleteGroup = function (groupName) {
+            if (this.hiddenGroups.hasOwnProperty(groupName)) {
+                delete this.hiddenGroups[groupName];
+                this.fireOnGroupDeletedCallbacks(groupName, this.$timeline, this.$container);
+                return;
+            }
+
+            this.hideGroup(groupName, false);
+            this.deleteGroup(groupName);
+        };
 
     }
 

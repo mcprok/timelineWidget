@@ -192,15 +192,13 @@
                 }
             });
 
-//            var onNewEventAdded = function(newEvent) {
-//                timelineService.addNewEvent(newEvent);
-//
-//            };
-
-//            newEventForm.addNewEventSubmitHandler(onNewEventAdded);
-
-
-
+            $('#groupDeleteButton').on('click', function() {
+                var timeline = timelineService.getTimeline('timeline');
+                if ( timeline != null) {
+                    var $groupChoosen = $('#groupHideShow').find("option:selected");
+                    timeline.deleteGroup($($groupChoosen ).html());
+                }
+            });
         });
     });
 
