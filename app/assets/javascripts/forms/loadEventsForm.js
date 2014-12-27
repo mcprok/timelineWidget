@@ -85,6 +85,7 @@ define('forms/loadEventsForm', function (require) {
             });
 
             var newEventCallback = function (event, groupName) {
+                viewSwitcher.switchView($("#timelinesWrapper"));
                 timeline.addEvent(event, groupName);
             };
 

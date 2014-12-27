@@ -49,7 +49,7 @@ $(function() {
     });
     $('#searchEndDateDiv').hide();
 
-    require(['timeline/timelineService'], function(timelineService) {
+    require(['timeline/timelineService', 'switcher'], function(timelineService, switcher) {
 
         $('#searchAction').on('click', function(e) {
             e.preventDefault();
@@ -70,10 +70,27 @@ $(function() {
                 var itemEndDate = createCellString(formattedString(item.end));
                 var itemGroup = createCellString(item.group.content);
                 var itemContent = createCellString(item.content);
-                var tableRow = $('<tr>' + itemContent + itemStartDate +itemEndDate+ itemGroup + $('</tr>'));
+
+				var goToEventLink = '<td><a class="js-gotoevent" href="#" data-groupName="' + item.group.content + '" data-start="' + item.start + '" + data-end="' + item.end + '">Go to event on timeline</a></td>';
+
+                var tableRow = $('<tr>' + itemContent + itemStartDate +itemEndDate+ itemGroup + goToEventLink + '</tr>');
                 $searchResults.append(tableRow);
             });
         });
+
+		$('body' ).delegate('.js-gotoevent', 'click', function(event) {
+			switcher.switchView($("#timelinesWrapper"));
+			var item = $(event.currentTarget);
+			var start = item.data('start');
+			var end = item.data('end');
+			var groupName = item.data('groupname');
+			console.log(groupName);
+			var timeline = timelineService.getTimeline('timeline');
+			timeline.$timeline.setVisibleChartRange(start, end);
+
+
+		});
+
     });
 
     var createCellString = function(content) {

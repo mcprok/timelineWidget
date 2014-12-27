@@ -96,8 +96,6 @@ define('timeline/timelineClass', function (require) {
 
         this.addEvent = function (event, groupName) {
             event.group = groupName;
-            event.geo = [19.941002, 50.0611];
-            event.location = "Klub RE, Kraków, Poland";
             this.nextEventId = this.nextEventId + 1;
             this.$timeline.addItems([event]);
             this.$timeline.redraw();
@@ -286,7 +284,7 @@ define('timeline/timelineClass', function (require) {
                 return;
             }
 
-            this.hideGroup(groupName, false);
+            this.hideGroup(groupName);
             this.deleteGroup(groupName);
         };
 
