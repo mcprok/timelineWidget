@@ -3,7 +3,7 @@ define('timeline/selectionService', function (require) {
     var alertsService = require('alerts/alertsService');
 
     var selectCallback = function (timelineClass) {
-        _.forEach(timelineClass.groups, function (timeline) {
+            var timeline = timelineClass.$timeline;
             var sel = timeline.getSelection();
             if (sel.length) {
                 if (sel[0].row != undefined) {
@@ -27,7 +27,7 @@ define('timeline/selectionService', function (require) {
                     });
                 }
             }
-        });
+
     };
 
     return {
