@@ -1,0 +1,182 @@
+% By zmienic jezyk na angielski/polski, dodaj opcje do klasy english lub polish
+\documentclass[polish,12pt]{aghthesis}
+\usepackage[latin2]{inputenc}
+\usepackage{url}
+
+\author{Grzegorz Miejski, Maciej Prokopiuk}
+
+\title{Aplikacja webowa do wizualizacji danych na osi czasu}
+
+\supervisor{mgr inż. Kamil Piętak}
+
+\date{2015}
+
+% Szablon przystosowany jest do druku dwustronnego, 
+\begin{document}
+
+\maketitle
+
+
+
+\section{Cel prac i wizja produktu}
+%\section{Project goals and vision}
+\label{sec:cel-wizja}
+\emph{
+Zgodnie z tematem projektu, problemem jest wizualizacja zdarzeń na osi czasu. Rozważano dwa możliwe rozwiązania techniczne. Pierwszym było stworzenie aplikacji, z której użytkownicy mogliby korzystać niezależnie, a drugim stworzenie biblioteki, bądź widgetu, który możnaby dołączyć do dowolnej aplikacji webowej. Zdecydowano się na drugi wariant rozwiązania, który jest zdecydowanie bardziej uniwersalny, elastyczny i łatwiejszy do rozbudowy jak i również do personalizacji przez końcowych użytkowników. 
+Projekt ma więc za zadanie stworzenie biblioteki służącej do wyświetlania informacji o zdarzeniach na osi czasu, którą można w prosty sposób dołączyć do dowolnej aplikacji internetowej. \\Istnieje wiele gotowych rozwiązań i aplikacji, które umożliwiają proste wyświetlanie danych na osiach czasu, jednak żadne nie spełniało wszystkich postawionych wymagań. Z tego względu zdecydowano się stworzyć własne narzędzie dostosowane do potrzeb klienta. 
+
+Początkowo rozważano stworzenie produktu od zera, jednak ze względu ryzyko związane z ograniczeniem czasowym projektu, postanowiono skorzystać z istniejącej już biblioteki Chap-Links, która oferuje największy zasób funkcjonalności spośród wszystkich znalezionych narzędzi, i rozszerzyć ją o brakujące funkcje. Użytkownikowi zostaną udostępnione funkcję do tworzenia i zarządzania osią czasu, dostępu do danych w niej zawartych oraz prostych narzędzi do analizowania wcześniej wspomnianych danych, t.j. wyszukiwanie konkretnych zdarzeń względem ich zawartości, dat rozpoczęcia i końca, czy znajdowanie zdarzeń, których ramy czasowe się nakładają. Dodatkowo w ramach projektu ma zostać stworzona aplikacja demonstrująca przykładowe użycie stworzonej biblioteki.
+
+COŚ JESZCZE? NIE MAM POMYSLU
+
+Charakterystyka problemu, motywacja projektu (w tym przegl±d
+  istniej±cych rozwi±zañ prowadz±ca do uzasadnienia celu prac), ogólna
+  wizja produktu, krótkie studium wykonalno¶ci i analiza zagro¿eñ.
+
+}
+
+\section{Zakres funkcjonalno¶ci}
+%\section{Functional scope}
+\label{sec:zakres-funkcjonalnosci}
+
+\emph{Kontekst u¿ytkowania produktu (aktorzy, wspó³pracuj±ce systemy)
+  oraz najwa¿niejsze wymagania funkcjonalne i niefunkcjonalne.}
+
+\section{Wybrane aspekty realizacji}
+%\section{Selected realization aspects}
+\label{sec:wybrane-aspekty-realizacji}
+
+\emph{
+
+Tutaj moze ten diagramik, z całą strukturą problemu? 
+Przepisanie tego, że biblioteka to wrapper na chap-linksa
+
+
+SUBSEKCJA NIE UMIEM TEGO ZROBIC :( 
+Napotkane problemy i ich rozwiązania.
+
+Jednym z problemów była implementacja wskaźnika elementów. Wskaźnik ma podświetlać elementy, których zakres dat zawiera datę wskazaną przez użytkownika za pomocą myszki. Napotkaliśmy ciekawy problemem wydajnościowo-implementacyjnym. Nie jest możliwa realizacja tego zagadnienia używając CSS, więc musieliśmy wymyśleć rozwiązanie oparte na JavaScript. Ponieważ każdy ruch myszki użytkownika przy odblokowanym wskaźniku oznacza odpalenie jednego eventu ‘mousemove’, które skutkowałoby wywołaniem callbacka podświetlającego dane zdarzenia należało zadbać o wydajność rozwiązania, tak by nie uprzykrzać życia użytkownikowi, wykonywaniem zbyt dużej liczby operacji przy każdym ruchu myszki. Jeśli za każdym razem przeglądalibyśmy wszystkie zdarzenia na osi czasu porównując ich zakres dat do aktualnie wskazanej przez użytkownika daty to przeglądarka mogłaby nie wytrzymać obciążenia i ulec zawieszeniu. Dlatego zdecydowaliśmy się stworzyć własną strukturę, która będzie w stanie odpowiadać na zapytania o zdarzenia w danym punkcie czasu szybciej. 
+\\Stworzyliśmy tablicę o rozmiarze odpowiadającym szerokości aktualnej osi czasu w pikselach, w której komórkach trzymana jest lista zdarzeń mających miejsce w danym punkcie czasu (pikselu szerokości osi danych w aplikacji) wskazywanym przez kursor myszki. Pozwala to odpowiadać na zapytanie o zdarzenia w czasie stałym.
+Tablica ta jest wyliczana po zmianie zakresu dat osi czasu, a jej budowa ma czas liniowy względem ilości zdarzeń na osi czasu. I polega na wybraniu aktualnie wyświetlonych elementów osi czasu, a następnie za pomocą porównywania dat zdarzeń umieszczaniu ich w odpowiedniej komórce tabeli wynikowej.
+
+W celu poprawy wydajności zastosowaliśmy również mechanizm opóźnionego wywołania, który polega na wykonaniu callbacku JavaScript (w naszym wypadku podświetlania elementów), dopiero w zadanym czasie po zakończeniu serii eventów. Opóźnione wywołanie jest zrealizowane, za pomocą funkcji setTimeout, która ustawia timeout dla operacji zaktualizowania struktury, który jest resetowany i ustawiany na nowo przy każdym wywołaniu event`u ‘mousemove’ na kontenerze zawierającym oś czasu. 
+ Dzięki temu rozwiązaniu użytkownik, który nieustannie zmienia zakres dat za pomocą scrolla, bądź przesuwania myszką osi czasu nie będzie obciążał nadmiernie przeglądarki. 
+\\
+\\TO TRZEBA SFORMATOWAC :(
+
+Kolejnym problemem było umożliwienie użytkownikowi ukrywania pojedynczych grup zdarzeń. 
+Ukrywanie grup to jedna z funkcjonalności, których brakuje w oryginalnej bibliotece chap-links. Twórcy nie przewidzieli takiej możliwości, dlatego musieliśmy wymyślić właśny sposób dopasowania istniejącego API bibiloteki chap-links, aby zrealizować to wymaganie.
+
+Realizacja ukrywania:
+
+Pierwszym krokiem jest przeglądnięcie wszystkich zdarzeń w poszukiwaniu tych, których nazwa grupy zgadza się z nazwą tej, którą chcemy ukryć. 
+
+Kolejnym krokiem jest zapisanie ukrywanej grupy w zmiennej hiddenGroups.
+Ukrywaną grupę zapisujemy w postaci “nazwa grupy” => tablica zdarzeń do niej należących.
+
+Następnie usuwamy te wydarzenia z grupy wszystkich zdarzeń aktualnie wizualizowanych w timelinie chap-links.
+
+Wywołanie metody redraw() na obiekcie chap-links w celu ponownego narysowania timeline’u
+Wywołanie wszystkich callbacków które mają być wywołane po ukryciu danej grupy
+
+
+Realizacja ponownego pokazywania:
+Pierwszym krokiem jest sprawdzenie czy wcześniej ukryliśmy grupę o podanej nazwie. Jeżeli nie w konsoli pojawia się błąd.
+Kolejnym krokiem jest pobranie ze zmiennej wszystkich obiektów grupy które wcześniej ukryliśmy
+Następnie dodajemy wszystkie wcześniej ukryte wydarzenia do obiektu chap-links za pomocą metody: addItems(items)
+Wywołujemy metodę redraw() aby ponownie narysować ukryte wcześniej wydarzenia 
+
+Niestety wewnętrzny sposób działania biblioteki chap-links sprawia że jedynym rozwiązaniem jest właśnie taka realizacja tej funkcjonalności.
+
+
+
+Ostatnim zagadnieniem, które chcemy poruszyć w tej sekcji jest wyszukiwanie zdarzeń. 
+Wyszukiwanie następuje w oparciu o podaną frazę oraz pewne kryteria zapytania.
+Kryteria przekazuje się w postaci obiektu o stricte zadeklarowanych parametrach wyszukiwania:
+after - data określająca od którego miejsca w czasie wyszukujemy wydarzenia
+before - data określająca do którego miejsca w czasie wyszukujemy wydarzenia
+groups - tablica nazw grup, do których zawężamy wyszukiwanie
+
+Wszystkie kryteria poza frazą do wyszukania są opcjonalne. Domyślna konfiguracja wyszukiwania wygląda następująco:
+
+ var searchConfig = {
+                chronological: true,
+                after: null,
+                before: null,
+                groups: []
+            };
+
+Opcje przekazane przez użytkownika jako parametr wyszukiwania nadpisują domyślną konfigurację.
+Ze względu na to, że JavaScript nie posiada w swojej specyfikacji zmiennych prywatnych, które  możnaby w prosty sposób nadpisać używając chociażby konstruktora, do nadpisywania wartości domyślnych konfiguracji zawartych w domknięciu użyliśmy biblioteki jQuery i funkcji extend. Przykładowe rozszerzenie, bądź nadpisanie ustawień wyszukiwania odbywa się więc poprzez wywołanie metody jQuery.extend(defaultConfig, customOptions). 
+
+Rozpatrzmy różne przypadki zachowania wyszukiwania w zależności od parametrów konfiguracji :
+parametr “after”:
+jeżeli jego wartość jest równa null - jedynym ograniczeniem dat podczas wyszukiwania będzie ograniczenie zdefiniowane przez parametr “before”
+jeżeli jest obiektem typy Date, wtedy wyszukiwanie wybierze tylko te wydarzenia, których data początkowa ( która przypomnijmy jest obowiązkowa dla każdego wydarzenia ) jest datą późniejszą niż podana
+parametr “before”:
+jeżeli jego wartość jest równa null - jedynym ograniczeniem dat podczas wyszukiwania będzie ograniczenie zdefiniowane przez parametr “after”
+jeżeli jest obiektem typy Date, wtedy wyszukiwanie wybierze tylko te wydarzenia, które:
+ jeżeli posiadają datę końcową - ich data końcowa następuje przed podaną datą 
+jeżeli posiadają tylko datę początkową - ich data początkowa jest datą wcześniejszą niż podana
+
+Parametr “groups”:
+jeżeli jest pustą tablicą lub nullem - wtedy wyszukiwanie nie jest ograniczone do żadnej z grup
+jeżeli jest niepustą tablicą - wyszukiwanie jest ograniczone tylko do tych grup, których nazwa widnieje w podanej tablicy
+
+Po ustaleniu parametrów właściwych wyszukiwania wybieramy grupy zadeklarowane w parametrze opcji “groups” ( lub wszystkie gdy nie zostały podane żadne konkretne). Wybieramy wszystkie zdarzenia z nich, które spełniają kryteria wyszukiwania i zwracamy w postaci tablicy zawierającej zdarzenia.
+Użytkownik może na przykład wyświetlić uzyskane rezultaty za pomocą tabelki html. Bądź przesłać otrzymane wyniki do kolejnej metody w celu filtrowania lub innej formy przetworzenia. 
+
+
+Przyjête za³o¿enia, struktura i zasada dzia³ania systemu,
+  wykorzystane rozwi±zania technologiczne wraz z krótkim uzasadnieniem
+  ich wyboru.}
+
+\section{Organizacja pracy}
+%\section{Work organization}
+\label{sec:organizacja-pracy}
+
+\emph{
+TRZEBA TO POFORMATOWAĆ
+W ramach pracy nad projektem zdecydowano się pracować z zachowaniem pewnych zasad Agile. Prace przebiegały z wykorzystaniem elementów metodyki Scrum. Uznano, że ten model najbardziej będzie pasował do przebiegu projektu inżynierskiego oraz pozwoli zdobyć zespołowi doświadczenie przydatne w późniejszej karierze zawodowej. Wewnątrz iteracji trwających od jednego do dwóch miesięcy pracowano wzorując się na metodologii Kanban, polegającej na priorytetyzowaniu zadań i wykonywaniem ich w kolejności zgodnej z ustalonym priorytetem. Wykorzystano też pewne narzędzia usprawniające pracę i zarządzanie. 
+  
+W pierwszych tygodniach projektu zastanawiano się jak podzielić zakres obowiązków, jendak nie było do końca wiadomo jak będzie przebiegała praca nad projektem. Jednym z pomysłów było podzielenie się na stronę back-end`ową i front-end`ową, ale kiedy wyklarowało się, że głównym celem projektu jest stworzenie widgetu, bądź biblioteki umożliwiającej użytkownikom wizualizację danych zdecydowano się porzucić ten pomysł. 
+
+Po utworzeniu wstępnego backlogu zdecydowano się dzielić względem funkcjonalności. Jeden programista był odpowiedzialny za określoną część biblioteki np. dodawanie zdarzeń, wyszukiwanie zdarzeń, wskaźnik elementów, których czas trwania zawierał się w czasie wyspecyfikowanym przez użytkownika.
+
+Ze względu na małą ilość osób w zespole nie było podziału ról i obowiązków. Obie osoby zajmowały się zarówno programowaniem, jak i zarządzaniem projektem.  
+
+3. Użyte narzędzia
+W celu usprawnienia pracy i zarządzania projektem użyto następujących narzędzi: 
+3.1 Do zarządzania backlogiem
+Do zarządzania backlogiem użyto serwisu trello.com ( http://trello.com ) . 
+Jest to darmowe, bardzo elastyczne narzędzie umożliwiające w prosty sposób zarządzać projektem i organizować pracę. Udostępnia bardzo intuicyjny interfejs użytkownika pomagający szybko przenosić bądź grupować historyjki. Pozwala również na przypisywanie konkretnych osób do określonych zadań, dzięki czemu można bardzo szybko dowiedzieć się kto aktualnie nad czym pracuje.
+
+Przed rozpoczęciem pierwszej iteracji wraz z klientem ustalono początkowy backlog, który następnie został przepisany jako historyjki użytkowników oraz pod-zadania techniczne do projektu na Trello.com. Trello świetnie sprawdził się w swojej roli. W trakcie trwania projektu ujmowano z backlogu pewne zadania, które okazały się na przykład drugoplanowe lub zupełnie niepotrzebne, a także dodawano nowe zadania wynikające z przebiegu projektu. Wszystko przebiegało bardzo sprawnie, a członkowie projektu w jasny sposób mogli dowiedzieć się co aktualnie się dzieje w projekcie, dzięki podziałowi projektu na trello na kolejne iteracje oraz grupowaniu zadań jeszcze nie zaczętych bądź chociażby duplikowanych. 
+
+
+3.2 Do zarządzania kodem
+Do zarządzania kodem zdecydowano się użyć narzędzia Git (http://git-scm.com/ ) wraz z repozytorium kodu na platformie GitHub (http://github.com). Git został wybrany ze względu na rozproszony system pracy. Każdy mógł pracować na własnej lokalnej kopii kodu oraz na branchach, umożliwiających łatwiejsze zarządzanie funkcjonalnościami. Dzięki temu programiści mogli niezależnie organizować sobie pracę. Git posiada wiele przydatnych i przyśpieszających prowadzenie projektu funkcji, jak na przykład rebase, umożliwiający zachowanie lepszej historii napisanego kodu, bądź automatyczne merge branchy do głównej gałęzi projektu (jeśli nie wynikają jakieś konflikty, których Git sam nie może rozwiązać). Repozytorium jest publiczne, więc każdy może zajrzeć w tworzony kod, dodawać do niego komentarze, bądź tworzyć pull-requesty, w celu poprawy części kodu, bądź dodania nowych funkcjonalności. 
+
+
+3.3 Do komunikacji
+W przypadku, gdy niemożliwe było spotkanie pomiędzy programistami na żywo korzystano z Google Hangouts (http://www.google.com/+/learnmore/hangouts/?hl=pl). Jest to narzędzie umożliwiające tworzenie prostych w obsłudze wideokonferencji dla wielu osób. Dodatkowym atutem tego narzędzia jest możliwość udostępniania ekranu uczestnikom konferencji, dzięki czemu można rozmawiać o problemach pokazując od razu kod, który dotyczy danego zagadnienia. Używano tego narzędzia zarówno do inspekcji kodu jak i ustalania spraw bieżących związanych z projektem. 
+
+
+\section{Wyniki projektu}
+%\section{Project results}
+
+\label{sec:wyniki-projektu}
+
+\emph{Najwa¿niejsze wyniki (co konkretnie uda³o siê uzyskaæ:
+  oprogramowanie, dokumentacja, raporty z testów/wdro¿enia, itd.)
+  i ocena ich u¿yteczno¶ci (jak zosta³o to zweryfikowane --- np.\ wnioski
+  klienta/u¿ytkownika, zrealizowane testy wydajno¶ciowe, itd.),
+  istniej±ce ograniczenia i propozycje dalszych prac.}
+
+% o ile to mozliwe prosze uzywac odwolan \cite w konkretnych miejscach a nie \nocite
+
+\nocite{artykul2011,ksiazka2011,narzedzie2011,projekt2011}
+
+\bibliography{bibliografia}
+
+\end{document}
