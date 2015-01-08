@@ -2,12 +2,15 @@
 \documentclass[polish,12pt]{aghthesis}
 \usepackage[utf8]{inputenc}
 \usepackage{url}
+\usepackage{graphicx}
+\usepackage{listings}
+
 
 \author{Grzegorz Miejski, Maciej Prokopiuk}
 
 \title{Aplikacja webowa do wizualizacji danych na osi czasu}
 
-\supervisor{mgr inż. Kamil Piętak}
+\supervisor{dr inż. Aleksander Byrski}
 
 \date{2015}
 
@@ -21,53 +24,270 @@
 \section{Cel prac i wizja produktu}
 %\section{Project goals and vision}
 \label{sec:cel-wizja}
-\emph{Charakterystyka problemu, motywacja projektu (w tym przegld
-  istniejcych rozwiązań prowadzca do uzasadnienia celu prac), oglna
-  wizja produktu, krtkie studium wykonalnoci i analiza zagrożeń.}
 
-
+\subsection{Opis projektu}
 Zgodnie z tematem projektu, problemem jest wizualizacja zdarzeń na osi czasu. Rozważano dwa możliwe rozwiązania techniczne. Pierwszym było stworzenie aplikacji, z której użytkownicy mogliby korzystać niezależnie, a drugim stworzenie biblioteki, bądź widgetu, który możnaby dołączyć do dowolnej aplikacji webowej. 
 \\
 
 	Zdecydowano się na drugi wariant rozwiązania, który jest zdecydowanie bardziej uniwersalny, elastyczny i łatwiejszy do rozbudowy jak i również do personalizacji przez końcowych użytkowników. 
 \\
 
-	Projekt ma więc za zadanie stworzenie biblioteki służącej do wyświetlania informacji o zdarzeniach na osi czasu, którą można w prosty sposób dołączyć do dowolnej aplikacji internetowej. Istnieje wiele gotowych rozwiązań i aplikacji, które umożliwiają proste wyświetlanie danych na osiach czasu, jednak żadne nie spełniało wszystkich postawionych wymagań. Z tego względu zdecydowano się stworzyć własne narzędzie dostosowane do potrzeb klienta.
+	Projekt ma więc za zadanie stworzenie biblioteki służącej do wyświetlania informacji o zdarzeniach na osi czasu, którą można w prosty sposób dołączyć do dowolnej aplikacji internetowej. Istnieje wiele gotowych rozwiązań i aplikacji, które umożliwiają proste wyświetlanie danych na osiach czasu, jednak żadne nie spełniało wszystkich postawionych wymagań. Z tego względu zdecydowano się stworzyć własne narzędzie dostosowane do potrzeb klienta. Narzędzie to, czyli widget javascriptowy będziemy od tej pory nazywać jako \textbf{TimelineWidget}. 
 \\
 
-Początkowo rozważano stworzenie produktu od zera, jednak ze względu na ryzyko związane z ograniczeniem czasowym projektu oraz brakiem doświadczenia zespołu projektowego w tego typu problemach, postanowiono skorzystać z istniejącej już biblioteki Chap-Links, która oferuje największy zasób funkcjonalności spośród wszystkich znalezionych narzędzi, i rozszerzyć ją o brakujące funkcje aby spełnić wszystkie wymagania stawiane przez klienta.
+Początkowo rozważano stworzenie produktu od zera, jednak ze względu na ryzyko związane z ograniczeniem czasowym projektu oraz brakiem doświadczenia zespołu projektowego w tego typu problemach, postanowiono wykorzystać istniejącą już bibliotekę Chap-Links Timeline, która oferuje największy zasób funkcjonalności spośród wszystkich znalezionych narzędzi, i rozszerzyć ją o brakujące funkcje aby spełnić wszystkie wymagania stawiane przez klienta.
 \\
 
 Użytkownikowi zostaną udostępnione funkcję do tworzenia i zarządzania osią czasu, dostępu do danych w niej zawartych oraz prostych narzędzi do analizowania wcześniej wspomnianych danych, t.j. wyszukiwanie konkretnych zdarzeń względem ich zawartości, dat rozpoczęcia i końca, czy znajdowanie zdarzeń, których ramy czasowe się nakładają. Dodatkowo w ramach projektu ma zostać przedstawiona aplikacja demonstrująca przykładowe użycie stworzonej biblioteki.
 \\
 
-Dzięki oparciu się na bibliotecie chap-links Timeline istnieją duże szanse na zakończenie się projektu sukcesem. Byliśmy jednak przygotowani na niespodziewane problemy, które mogłyby wynikać z szczególnych realizacji niektórych aspektów biblioteki, które uniemożliwiałyby lub utrudniałyby realizację wybranych funkcjonalności. Mając jednak bezpośredni dostęp do kodu źródłowego biblioteki moglibyśmy dzięki spokojnej pracy wystarczająco wcześnie odkryć te sytuację i spróbować rozwiązać problem zmieniając kod bezpośrednio danej biblioteki.
+Dzięki oparciu się na bibliotecie chap-links Timeline istniały duże szanse na zakończenie projektu sukcesem. Byliśmy jednak przygotowani na niespodziewane problemy, które mogłyby wynikać z szczególnych realizacji niektórych aspektów biblioteki, uniemożliwiające lub utrudniające realizację wybranych funkcjonalności. Mając jednak bezpośredni dostęp do kodu źródłowego biblioteki moglibyśmy dzięki spokojnej pracy wystarczająco wcześnie odkryć te sytuację i spróbować rozwiązać problem pracując bezpośrednio na kodzie biblioteki.
 
+\subsection{Słownik pojęć}
 
+Aby dokumentację użytkownika czytało się w sposób prosty, najpierw przedstawiamy pojęcia, które często będą pojawiały się w poniższym dokumencie:
+
+\begin{itemize}
+	\item \textit{zdarzenie} - pojedyńcze zdarzenie, które chcemy zwizualizować za pomocą naszego widgetu na osi czasu
+	\item \textit{grupa} - zbiór wydarzeń, powiązanych ze sobą ( np: tematycznie ). Reprezentowana jako pojedyńcza oś czasu.
+	\item \textit{timeline} - caly element html, który wizualizuje różne grupy wydarzeń
+	\item \textit{event} - rozumiany jako event javascriptowy, na który możemy zareagować własnym callbackiem javascriptowym
+	\item \textit{klaster} - kilka zdarzeń zgrupowanych w jeden element w celu zwiększenia przejrzystości timeline’a
+	\item \textit{wskaźnik} - linia pionowa na timelinie sterowana za pomocą myszki, podświetlająca wszystkie zdarzenia oraz klastry przez które przechodzi
+\end{itemize}
+
+Opis poszczególnych elementów zawarliśmy na poniższym obrazie, aby ułatwić zrozumienie pojęć którymi posługujemy się w dokumentacji.\\
+
+\includegraphics[width=16cm]{description_enhanced}
+\pagebreak
 \section{Zakres funkcjonalności}
 %\section{Functional scope}
 \label{sec:zakres-funkcjonalnosci}
 
-\emph{Kontekst użytkowania produktu (aktorzy, współpracujące systemy)
-  oraz najważniejsze wymagania funkcjonalne i niefunkcjonalne.}
+Głównym celem użytkownika jest łatwy sposób wizualizacji różnych zbiorów zdarzeń i porównywanie zdarzeń należących do różnych grup wydarzeń. Dzięku wybraniu technologii javascript do wykonania biblioteki, końcowy użytkownik może w prosty sposób w swojej webowej aplikacji wykorzystać naszą bibliotekę.
+\\
+
+Na początku pracy ustaliliśmy z klientem zbiór wymagań funkcjonalnych na których mu zależy. Najważniejsze z nich zamieszczamy poniżej:
+
+\begin{tabular}{|c|p{6cm}|p{7cm}|}
+  \hline 
+  \multicolumn{3}{ |c| }{\textbf{Wymagania funkcjonalne}} \\
+  \hline
+  Lp. & Nazwa & Opis \\
+  \hline
+  1. & Wizualizacja zdarzeń na osi czasu & Jako użytkownik chciałbym zobaczyć zdarzenia zwizualizowane na osi czasu.\\
+  \hline
+  2. & Dodawanie zdarzeń przez użytkownika & Jako użytkownik chciałbym mieć możliwość ręcznego dodania danych do osi czasu.\\
+  \hline
+  3. & Usuwanie zdarzeń przez użytkownika & Jako użytkownik chciałbym móc usunąć dane zdarzenie z osi czasu.\\
+  \hline
+  4. & Zoomowanie osi czasu & Jako użytkownik chciałbym być w stanie zmienić zakres dat widzianych poprzez przybliżanie i oddalanie osi czasu przy użyciu scrolla myszki. \\
+  \hline
+  5. & Dodawanie wielu grup zdarzeń  & Jako użytkownik chciałbym móc dodać więcej niż jedną grupę danych.\\
+  \hline
+  6. & Wyświetlenie szczegółów zdarzenia & Jako użytkownik chciałbym być w stanie zobaczyć szczegóły zdarzenia, które wybiorę. \\
+  \hline
+  7. & Wertykalne przesuwanie osi czasu & Jako użytkownik chciałbym móc zmieniać zakres dat prezentowanych na osi czasu poprzez przesuwanie jej w prawo i lewo.\\
+  \hline
+  8. & Wyszukiwanie zdarzeń & Jako użytkownik chciałbym mieć możliwość wyszukania zdarzeń które mnie interesują wśród wszystkich zdarzeń wraz z informacją, do której grupy należą.\\
+  \hline
+  9. & Podświetlanie zdarzeń mających miejsce w tym samym czasie & Jako użytkownik chciałbym być w stanie podświetlić na osi czasu zdarzenia, których przedział czasowy zawiera określony przeze mnie moment czasu.\\
+  \hline
+    10. & Pokazywanie i ukrywanie grup danych na osi czasu & Jako użytkownik chciałbym mieć możliwość dynamicznego ukrywania i pokazywania danych grup zdarzeń.\\
+  \hline
+\end{tabular} 
+
+
+Klient przedstawił również kilka wymagań niefunkcjonalnych które nasz projekt miał spełniać. Wybór technologii pomógł nam spełnić wszystkie z nich.
+\\
+\begin{tabular}{|c|p{13cm}|}
+  \hline 
+  \multicolumn{2}{ |c| }{\textbf{Wymagania niefunkcjonalne}} \\
+  \hline
+  Lp. &  Opis \\
+  \hline
+  1. & Użytkownik powinien być w stanie z łatwością podłączyć wykonaną bibliotekę do projektu.\\
+  \hline
+  2. & Bibliotekę powinno się dać wykorzystać na popularnych przeglądarkach webowych t.j. Chrome, Firefox.\\
+  \hline
+  3. & Biblioteka nie powinna utrwalać danych. Powinna działać jedynie w pamięci dostępnej w przeglądarce.\\
+  \hline
+\end{tabular} 
+
 
 \section{Wybrane aspekty realizacji}
 %\section{Selected realization aspects}
 \label{sec:wybrane-aspekty-realizacji}
 
-\emph{Przyjęte założenia, struktura i zasada działania systemu,
-  wykorzystane rozwiązania technologiczne wraz z krótkim uzasadnieniem
-  ich wyboru.}
+\subsection{Architektura TimelineWidgetu}
+
+W tej części opiszemy szczegółowo jak zbudowany jest nasz projekt, z czego korzystaliśmy oraz jakie rozwiązania implementacyjne, bądź technologiczne wykorzystaliśmy. Opiszemy najciekawsze aspekty naszego projektu oraz nakreślimy w jaki sposób można rozwinąć nasz projekt w przyszłości.
+
+Jak wspominaliśmy wcześniej, do realizacji projektu posłużyliśmy się istniejącą biblioteką służącą do wizualizacji wydarzeń na osi czasu. Sama biblioteka chap-links nie jest widoczna z poziomu użytkowania naszego widgetu. Jednak dbając o jak największą elastyczność naszego widgetu umożliwiamy bezpośrednie operowanie na obiekcie bibioteki chap-links, jeżeli użytkownik będzie posiadał taką potrzebę.
+
+Cały kod zawarliśmy w klasie javascriptowej o nazwie “Timeline”. To za jej pomocą użytkownik wykorzystuje api które udostępniamy. Jest ona odpowiedzialna za przeprowadzanie wszystkich zmian na osi czasu, jak również na samym jego tworzeniu i przechowywaniu informacji o zdarzeniach aktualnie wyświetlanych lub ukrytych.
+
+Zdarzeniem nazywamy obiekt javascriptu, który posiada następujące elementy:
+
+\begin{itemize}
+	\item \textit{start} - data początkowa wydarzenia
+	\item \textit{end} - opcjonalna data końca wydarzenia
+	\item \textit{content} - informacja o wydarzeniu
+	\item \textit{editable}  - opcja mówiąca, czy można edytować zdarzenie
+	\item oraz inne ustawienia, które potrzebujemy przy naszej aplikacji
+\end{itemize}
+
+Dzięki temu, że zdarzenia są obiektami javascriptowymi możemy w każdym z nich umieścić informacje potrzebne konkretnie przy danym problemie - jak na przykład informacja o geograficznej pozycji w której zdarzenie miało miejsce.\\
+
+Drugą częścią naszego projektu było wykonanie przykładowej aplikacji demonstrującej działanie i wykorzystanie naszego widgetu. Aplikacje demonstracyjna składa się więc z 
+następujących komponentów : 
+
+\begin{itemize}
+	\item TimelineWidget - główna część całego projektu
+	\item Parser formatu iCal do formatu JSON
+	\item Warstwa demonstracyjna
+\end{itemize}
+
+Założeniem projektu była operacja na nie zapisanych danych, więc cała komunikacja odbywa się po stronie klienta w przeglądarce. Po ponownym uruchomieniu aplikacji nie mamy dostępu do danych, na których wcześniej działaliśmy.
+\\
+
+\includegraphics[width=15.5cm]{architektura}
+
+\subsection{Wybrane problemy i ich rozwiązania}
+
+W tej sekcji opiszemy najciekawsze elementy związane z naszym projektem. Często okazywało się, że ich “ciekawość” wynikała z wykorzystania bibiloteki chap-links, co często blokowało nasze najlepsze rozwiązania.\\
+
+W tej sekcji opowiemy o trzech aspektach naszego projektu:
+\begin{itemize}
+	\item wskaźnik zdarzeń
+	\item ukrywanie grup
+	\item wyszukiwanie zdarzeń
+\end{itemize}
+
+\clearpage
+\subsubsection{Realizacja wskaźnika}
+
+Wskaźnik ma podświetlać elementy, których zakres dat zawiera datę wskazaną przez użytkownika za pomocą myszki. Napotkaliśmy ciekawy problemem wydajnościowo-implementacyjnym. Ponieważ każdy ruch myszki użytkownika przy odblokowanym wskaźniku oznacza odpalenie jednego eventu ‘mousemove’ , które skutkowałoby wywołaniem callbacka podświetlającego dane zdarzenia należało zadbać              o wydajność rozwiązania, tak by nie uprzykrzać życia użytkownikowi. Jeśli za każdym razem przeglądalibyśmy wszystkie zdarzenia na osi czasu porównując ich zakres dat do aktualnie wskazanej przez użytkownika daty to przeglądarka mogłaby nie wytrzymać obciążenia i ulec zawieszeniu. Dlatego zdecydowaliśmy się stworzyć własną, nieco bardziej skomplikowaną strukturę, realizującą powyższe zadanie szybciej. \\
+
+W tym celu wymyśliliśmy strukturę danych, która w stałym czasie jest w stanie odpowiedzieć na pytanie jakie wydarzenia mają miejsce w danym punkcie czasu. 
+Stworzyliśmy tablicę o rozmiarze odpowiadającym szerokości aktualnej osi czasu w pikselach, w której komórkach trzymana jest lista zdarzeń mających miejsce w danym punkcie czasu (pikselu szerokości) wskazywanym przez kursor myszki. 
+Tablica ta jest wyliczana po zmianie zakresu dat osi czasu, a jej budowa ma czas liniowy względem ilości zdarzeń na osi czasu. I polega na wybraniu aktualnie wyświetlonych elementów osi czasu, a następnie za pomocą porównywania dat zdarzeń umieszczaniu ich w odpowiedniej komórce tabeli wynikowej.\\
+
+W celu poprawy wydajności zastosowaliśmy również mechanizm opóźnionego wywołania, który polega na wykonaniu callbacku, dopiero w zadanym czasie po zakończeniu pewnej serii eventów. Opóźnione wywołanie jest zrealizowane, za pomocą funkcji setTimeout, która ustawia timeout dla operacji zaktualizowania struktury, i który jest resetowany i ustawiany na nowo przy każdym wywołaniu even`u ‘mousemove’ na kontenerze zawierającym oś czasu. \\
+
+ Dzięki temu rozwiązaniu użytkownik, który nieustannie zmienia zakres dat za pomocą scrolla, bądź przesuwania myszką osi czasu nie będzie obciążał nadmiernie przeglądarki.\\ 	
+
+Poniżej prezentujemy przykład wybrania i zaznaczenia kilku zdarzeń, których ramy czasowe się nakładają i zawierają punkt w czasie wybrany przez użytkownika. Czerwona linia wskazuje czas wybrany przez użytkownika. Znalezione zdarzenia są podświetlana natomiast na inny kolor.\\
+\clearpage
+Przykład obrazujący wygląd wskaźnika:\\
+
+\includegraphics[width=16cm]{pointer}
+
+
+\subsection{Realizacja ukrywania i pokazywania grup zdarzeń}
+
+Ukrywanie grup to jedna z funkcjonalności, których brakuje w oryginalnej bibliotece chap-links. Twórcy nie przewidzieli takiej możliwości, dlatego musieliśmy wymyślić właśny sposób dopasowania istniejącego API bibiloteki chap-links, aby zrealizować to wymaganie.\\
+
+Realizacja ukrywania przedstawiona w krokach:
+\begin{itemize}
+	\item Pierwszym krokiem jest przeglądnięcie wszystkich zdarzeń w poszukiwaniu tych, których nazwa grupy zgadza się z nazwą tej, którą chcemy ukryć. 
+	\item Kolejnym krokiem jest zapisanie ukrywanej grupy w zmiennej hiddenGroups.
+	\item Ukrywaną grupę zapisujemy w postaci “nazwa grupy” => tablica zdarzeń do niej należących.
+	\item Następnie usuwamy te wydarzenia z grupy wszystkich zdarzeń aktualnie wizualizowanych w timelinie chap-links.
+	\item Wywołanie metody redraw() na obiekcie chap-links w celu ponownego narysowania timeline’u
+	\item Wywołanie wszystkich callbacków które mają być wywołane po ukryciu danej grupy
+\end{itemize}
+
+Realizacja ponownego pokazywania przedstawiona w krokach:
+\begin{itemize}
+	\item Pierwszym krokiem jest sprawdzenie czy wcześniej ukryliśmy grupę o podanej nazwie. Jeżeli nie w konsoli pojawia się błąd.
+	\item Kolejnym krokiem jest pobranie ze zmiennej wszystkich obiektów grupy które wcześniej ukryliśmy
+	\item Następnie dodajemy wszystkie wcześniej ukryte wydarzenia do obiektu chap-links za pomocą metody: addItems(items)
+	\item Wywołujemy metodę redraw() aby ponownie narysować ukryte wcześniej wydarzenia 
+\end{itemize}
+
+Niestety wewnętrzny sposób działania biblioteki chap-links sprawia że jedynym rozwiązaniem jest właśnie taka realizacja tej funkcjonalności.
+Poniżej prezentujemy przykład użycia wyżej wymienionej funkcji na poszczególnych obrazkach:\\ 
+
+\includegraphics{hide_1}
+\begin{center}
+Wszystkie grupy są pokazane
+\end{center}
+
+\includegraphics{hide_2}
+\begin{center}
+Druga grupa została ukryta.
+\end{center}
+
+
+\subsection{Realizacja wyszukiwania zdarzeń}
+
+Wyszukiwanie następuje w oparciu o podaną frazę oraz pewne kryteria zapytania.
+Kryteria przekazuje się w postaci obiektu o stricte zadeklarowanych parametrach wyszukiwania:
+\begin{itemize}
+	\item after - data określająca od którego miejsca w czasie wyszukujemy wydarzenia
+	\item before - data określająca do którego miejsca w czasie wyszukujemy wydarzenia
+	\item groups - tablica nazw grup, do których zawężamy wyszukiwanie	
+\end{itemize}
+
+
+Wszystkie kryteria poza frazą do wyszukania są opcjonalne. Domyślna konfiguracja wyszukiwania wygląda następująco:\\
+
+\begin{lstlisting}
+var searchConfig = {
+                after: null,
+                before: null,
+                groups: []
+};
+\end{lstlisting}
+
+Opcje przekazane przez użytkownika jako parametr wyszukiwania nadpisują domyślną konfigurację.
+Jest to zrealizowane za pomoca funkcji biblioteki jQuery:
+\textit{extend(defaultConfig, options)}. 
+
+Rozpatrzmy różne przypadki zachowania wyszukiwania w zależności od parametrów konfiguracji :
+\begin{itemize}
+	\item parametr after:
+	\begin{enumerate}
+			\item jeżeli jego wartość jest równa null - jedynym ograniczeniem dat podczas wyszukiwania będzie ograniczenie zdefiniowane przez parametr “before”
+		\item jeżeli jest obiektem typy Date, wtedy wyszukiwanie wybierze tylko takie wydarzenia, których data początkowa ( która przypomnijmy jest obowiązkowa dla każdego wydarzenia ) jest datą późniejszą niż podana
+	\end{enumerate}
+\end{itemize}
+
+
+\begin{itemize}
+	\item parametr before:
+	\begin{enumerate}
+		\item jeżeli jego wartość jest równa null - jedynym ograniczeniem dat podczas wyszukiwania będzie ograniczenie zdefiniowane przez parametr after
+		\item jeżeli jest obiektem typu Date, wtedy wyszukiwanie wybierze tylko takie wydarzenia, które:
+		\begin{enumerate}
+			\item jeżeli posiadają datę końcową - ich data końcowa następuje przed podaną datą 
+			\item jeżeli posiadają tylko datę początkową - ich data początkowa jest datą wcześniejszą niż podana
+		\end{enumerate}
+	\end{enumerate}
+\end{itemize}
+
+
+\begin{itemize}
+	\item Parametr \textit{groups}:
+	\begin{enumerate}
+		\item jeżeli jest pustą tablicą lub nullem - wtedy wyszukiwanie nie jest ograniczone do żadnej z grup
+		\item jeżeli jest niepustą tablicą - wyszukiwanie jest ograniczone tylko do tych grup, których nazwa widnieje w podanej tablicy
+	\end{enumerate}
+\end{itemize}
+
+Po ustaleniu parametrów właściwych wyszukiwania wybieramy grupy zadeklarowane                 w parametrze opcji groups ( lub wszystkie gdy nie zostały podane żadne konkretne wartości). Wybieramy wszystkie wydarzenia z nich, które spełniają kryteria wyszukiwania i zwracamy w postaci tablicy javascriptowej.\\
+
+\clearpage
+Użytkownik dzieki wyszukiwaniu zdarzeń może na przykład wyświetlić uzyskane rezultaty za pomocą tabelki w kodzie HTML, jak na poniższym obrazku:
+
+\includegraphics[width=16cm]{Search}
+
 
 \section{Organizacja pracy}
 %\section{Work organization}
 \label{sec:organizacja-pracy}
 
-\emph{Struktura zespolu (role poszczeglnych osób), krótki opis i
-  uzasadnienie przyjętej metodyki i/lub kolejności prac, planowane i
-  zrealizowane etapy prac ze wskazaniem udziau poszczególnych
-  członków zespou, wykorzystane praktyki i narzędzia w zarządzaniu
-  projektem.}
 \subsection{Zespół projektowy}
 
 Zespół składał się z dwóch osób - Grzegorz Miejski oraz Maciej Prokopiuk.
@@ -84,11 +304,92 @@ Ze względu na małą ilość osób w zespole nie było podziału ról i obowią
 
 \subsection{Przyjęta metodyka pracy}
 
-Ustalono, że proces będzie prowadzony z zachowaniem pewnych zasad metodyki Agile. Całość pracy podzieliliśmy na poszczególne iteracje, dzięki czemu mieliśmy ciągly obraz stopnia ukończenia projektu w danej chwili oraz mogliśmy prezentować klientowi poszczególne funkcjonalności po każdej z nich, dzięki czemu od razu zbieraliśmy opinię na temat naszej pracy. Wewnątrz iteracji trwających od miesiące do dwóch miesięcy pracowano wzorując się na metodyki Kanban, polegającej na priorytetyzowaniu zadań i wykonywaniem ich w kolejności zgodnej z ustalonym priorytetem. Datą rozpoczęcia projektu ustanowiono dzień 17 marca 2014 roku. Wtedy miało miejsce pierwsze spotkanie z Pracowni Projektowej, na której poruszana była kwestia prowadzenia projektu i wymagań z tym związanych. Następnie proces pracy podzielono na 5 iteracji. Jako daty rozpoczęcia i zakończenia danych iteracji ustalono spotkania z klientem w celu przedstawienia zrealizowanych rzeczy. Oto jak ukształtował się podział iteracji: 
-\\\\
+Ustalono, że proces będzie prowadzony z zachowaniem pewnych zasad metodyki Agile. Całość pracy podzieliliśmy na poszczególne iteracje, dzięki czemu mieliśmy ciągly obraz stopnia ukończenia projektu w danej chwili oraz mogliśmy prezentować klientowi poszczególne funkcjonalności po każdej z nich, dzięki czemu od razu zbieraliśmy opinię na temat naszej pracy. Wewnątrz iteracji trwających od miesiące do dwóch miesięcy pracowano wzorując się na metodyki Kanban, polegającej na priorytetyzowaniu zadań i wykonywaniem ich w kolejności zgodnej z ustalonym priorytetem. Datą rozpoczęcia projektu ustanowiono dzień 17 marca 2014 roku. Wtedy miało miejsce pierwsze spotkanie z Pracowni Projektowej, na której poruszana była kwestia prowadzenia projektu i wymagań z tym związanych. Następnie proces pracy podzielono na 5 iteracji. Jako daty rozpoczęcia i zakończenia danych iteracji ustalono spotkania z klientem w celu przedstawienia zrealizowanych rzeczy. Oto jak ukształtował się podział iteracji: \\
 
- TODO - co kiedy zrobiliśmy i kto?
-\\\\
+\begin{flushleft}
+Iteracja 1: 17marca - 30kwietnia\\
+Iteracja 2: 1 maja -  22 czerwca\\
+Iteracja 3: 23 czerwca - 31 sierpnia\\
+Iteracja 4: 1 września - 14 październik\\
+Iteracja 5: 15 październik - 10 grudzień\\
+\end{flushleft}
+
+\subsubsection{Iteracja 1}
+Cała pierwsza iteracja minęła pod znakiem poznawania projektu, dobierania odpowiednich narzędzi do pracy. Można ją nazwać fazą kick-off projektu. \\
+
+Najważniejsze zadania zrealizowane podczas tej iteracji:
+\begin{itemize}
+	\item Pierwsze spotkanie z klientem - zapoznanie się z zarysem projektu
+	\item Zebranie wymagań funkcjonalnych i niefunkcjonalnych
+	\item priorytetyzacja wymagań 
+	\item analiza istniejących narzędzi służących do wizualizacji zdarzeń
+	\item stworzono szkielet aplikacji używając frameworka Play Framework 2 oraz repozytorium kodu na platformie Github
+\end{itemize}
+
+\subsubsection{Iteracja 2}
+
+W drugiej iteracji rozpoczęliśmy pracę nad zapoznaniem się z API biblioteki chap-links Timeline oraz parsowanie danych z postaci iCalendar do formatu JSON, aby użytkownik w prosty sposób mógł wczytywać wydarzenia do wizualizacji.
+
+Najważniejsze zadania zrealizowane podczas tej iteracji:
+\begin{itemize}
+	\item stworzenie parsera z formatu iCalendar do JSON 
+	\item przygotowanie przykładowych danych dla klienta pobranych z API Last FM
+	\item ustalono z klientem, że artefaktem projektu ma być widget a nie samodzielna aplikacja
+	\item wizualizację pojedyńczej grupy zdarzeń
+	\item usuwanie oraz dodawanie pojedyńczych zdarzeń
+\end{itemize}
+
+Wynikiem tej iteracji był widget umożliwiający ładowanie danych parsowanych przy pomocy modułu w Play Frameworku z formatu iCalendar do formatu JSON, a następnie ich wyświetlanie na pojedynczej osi czasu. Dodatkowo użytkownik mógł dodawać oraz usuwać pojedyncze zdarzenia na utworzonej osi czasu.
+
+Całość została przedstawiona klientowi aby na bieżąco móc usłyszeć sugestie dotyczące funkcjonalności oraz wyglądu widgetu.
+
+\subsubsection{Iteracja 3}
+
+W tej iteracji skupiliśmy się na podprawieniu wyglądu aplikacji przykłądowej oraz implementacji kolejnych funkcjonalności według ich priorytetów
+
+Najważniejsze zadania zrealizowane podczas tej iteracji:
+\begin{itemize}
+	\item umożliwienie wyszukiwania zdarzeń w oparciu o tytuł i opis wydarzenia
+	\item poprawa wyglądu aplikacji demonstracyjnej
+	\item możliwość wizualizacji zdarzeń w grupach
+	\item wyświetlenie szczegółów danego zdarzenia po jego wyborze
+\end{itemize}
+
+	Po tej iteracji okazało się, że w bibliotece Timeline Chap-Links istnieje więcej niż jeden sposób na stworzenie grup zdarzeń. Osie czasu można osadzać w jednym kontenerze lub w kilku, które są ze sobą połączone i na bieżąco zsynchronizowane. Najpierw wybrano metodę z jednym kontenerem. Wybór rodzaju tworzenie grup będzie silnie uzależniony od zadania dotyczącego customowego wskaźnika i podświetlania zdarzeń, które ma być zrealizowane w późniejszym etapie.
+	
+	Wynikiem tej iteracji był widget pozwalający wczytać nową oś czasu. Ponadto widget umożliwił grupowanie zdarzeń oraz wyświetlanie/pobranie szczegółów pojedynczego zdarzenia. 
+
+\subsubsection{Iteracja 4}
+
+W tej iteracji napotkaliśmy znaczne problemy, które były następstwem wykorzystania biblioteki chap-links Timeline. Funkcja ukrywania i pokazywania grup danych okazała się dużo trudniejsza niż się wydawało. W tym celu należy rozbić istniejący Timeline na osobne instancje i kontenery, a następnie synchronizować je ze sobą łączyć. Ustalono z klientem, że ta funkcjonalność ma niski priorytet, ponieważ służyłaby jedynie do wersji demonstracyjnej, a nie ma związku z widgetem, więc chwilowo zostałą odłożona na później.
+
+Najważniejsze zadania zrealizowane podczas tej iteracji:
+\begin{itemize}
+	\item dodanie wskaźnika do osi czasu, który będzie nas informował, które zdarzenia się na siebie nakładają czasowo
+\end{itemize}
+
+Wynikiem czwartej iteracji był widget posiadający wszystkie wcześniej zrealizowane funkcje, a dodatkowo rozwinięty o wskaźnik umożliwiający podświetlanie zdarzeń, których zakres dat pokrywa się z datą wyspecyfikowaną przez użytkownika. 
+
+\subsubsection{Iteracja 5}
+
+Na początku opisu ostatniej iteracji warto wspomnieć o paru rzeczach ustalonych z klientem.
+Zrezygnowano z dodawania zdjęć, plików video do poszczególnych zdarzeń jako szczegóły, na rzecz wyodrębnienia metod API, aby projekt mógł służyć jako odrębny widget/biblioteka JavaScript`owa. Nie skupiano się już tak bardzo na stronie wizualnej (poza wskaźnikiem), a raczej na możliwości operowania na danych przez użytkownika oraz możliwościach rozszerzania widgetu o nowe funkcjonalności.
+
+Najważniejsze zadania zrealizowane podczas tej iteracji:
+
+\begin{itemize}
+	\item działające wyszukiwanie z dodatkowymi kryteriami wyszukiwania ( zakres dat, wybór grup zdarzeń pośród których wyszukujemy 
+	\item wyodrębnienie metod API poprzez tworzenie javascriptowego obiektu na którym operuje użytkownik
+	\item poprawienie stylistyczne wskaźnika, aby podświetlał sklastrowane grupy zdarzeń
+	\item spakowanie biblioteki do jednego pliku .js w celu prostej możliwości instalacji
+	\item pokazywanie oraz ukrywanie grup zdarzeń
+\end{itemize}
+
+W tej iteracji dokończyliśmy implementację pozostałych wymagań funkcjonalnych projektu.
+Udało nam się również rozwiązać wcześniejszy problem z ukrywaniem grup zdarzeń przez tymczasowe przetrzymywanie ich w pamięci ale nie renderowanie ich na osi czasu.
+
+W wyniku ostatniej iteracji otrzymano jako artefakt widget umożliwiający wykonanie wszystkich wcześniej zrealizowanych funkcji, uzupełnionym o ukrywanie i pokazywanie grup zdarzeń na osi czasu. Wszystkie wcześniej zrealizowane funkcje zostały przerobione w sposób umożliwiający im działanie na konkretnych grupach. Użytkownik zyskał również możliwość wyszukiwania zdarzeń z uwzględnieniem dodatkowych kryteriów wyszukiwania. Usprawniony został również wskaźnik z poprzedniej iteracji i teraz podświetla również sklastrowane grupki zdarzeń, które są w postaci prostokątów z opisem ile elementów znajduje się w danej grupie. 
+
 
 \subsection{Użyte narzędzia}
 
@@ -104,11 +405,13 @@ Jest to darmowe, bardzo elastyczne narzędzie umożliwiające w prosty sposób z
 \\
 
 Trello świetnie sprawdził się w swojej roli. W trakcie trwania projektu ujmowano z backlogu pewne zadania, które okazały się na przykład drugoplanowe lub zupełnie niepotrzebne, a także dodawano nowe zadania wynikające z przebiegu projektu. Wszystko przebiegało bardzo sprawnie, a członkowie projektu w jasny sposób mogli dowiedzieć się co aktualnie się dzieje w projekcie, dzięki podziałowi projektu na trello na kolejne iteracje oraz grupowaniu zadań jeszcze nie zaczętych bądź chociażby duplikowanych. 
-\\
 
+\includegraphics[width=15cm]{trello}
 \subsubsection{Zarządzanie kodem}
 
 Do zarządzania kodem zdecydowano się użyć narzędzia Git (http://git-scm.com/ ) wraz z repozytorium kodu na platformie GitHub (http://github.com). Git został wybrany ze względu na rozproszony system pracy. Każdy mógł pracować na własnej lokalnej kopii kodu oraz na branchach, umożliwiających łatwiejsze zarządzanie funkcjonalnościami. Dzięki temu programiści mogli niezależnie organizować sobie pracę. Git posiada wiele przydatnych i przyśpieszających prowadzenie projektu funkcji, jak na przykład rebase, umożliwiający zachowanie lepszej historii napisanego kodu, bądź automatyczne merge branchy do głównej gałęzi projektu (jeśli nie wynikają jakieś konflikty, których Git sam nie może rozwiązać). Repozytorium jest publiczne, więc każdy może zajrzeć w tworzony kod, dodawać do niego komentarze, bądź tworzyć pull-requesty, w celu poprawy części kodu, bądź dodania nowych funkcjonalności. 
+
+\includegraphics[width=15cm]{github}
 
 \subsubsection{Komunikacja}
 
@@ -121,11 +424,61 @@ W przypadku, gdy niemożliwe było spotkanie pomiędzy programistami na żywo ko
 
 \label{sec:wyniki-projektu}
 
-\emph{Najważniejsze wyniki (co konkretnie udało się uzyskać:
-  oprogramowanie, dokumentacja, raporty z testów/wdrożenia, itd.)
-  i ocena ich użyteczności (jak zostało to zweryfikowane --- np.\ wnioski
-  klienta/użytkownika, zrealizowane testy wydajnościowe, itd.),
-  istniejące ograniczenia i propozycje dalszych prac.}
+\subsection{Podsumowanie}
+
+Podsumowując, projekt można uznać za zakończony sukcesem. Nie obyło się bez problemów, które wynikały głównie z używania zewnętrznej biblioteki, która jak się okazało nie jest idealna i zmuszała nas nieraz do korzystania z góry narzuconych rozwiązań. Pomimo wszelkich niedogodności udało się oddać projekt klientowi, który był z niego zadowolony i nie miał żadnych zastrzerzeń. Udało nam się dostarczyć produkt spełniający wszystkie wymagania funkcjonalne i niefunkcjonalne, które były przed nim stawiane w terminie. Dzięki zastosowaniu elementów metodyki Agile i podziale pracy na iteracje byliśmy w stanie na bieżąco dostarczać klientowi nowe funkcjonalności i wprowadzać poprawki do istaniejących funkcji, co bardzo usprawniało pracę. 
+
+Efektem końcowym pracy nad projektem jest biblioteka javascriptowa (widget) która może zostać w prosty sposób podłączona do istniejących aplikacji internetowych.
+
+Dodatkow wytworzyliśmy szereg dokumentacji które pomagają w zrozumieniu procesu oraz użytkowaniu naszej aplikacji:
+\begin{itemize}
+	\item dokumentacja procesowa - omawia szczegółowo aspekty realizacji projektu od jego początku aż po dostarczenie ostatecznej wersji klientowi. Zawarte są w niej również wymagania funkcjonalne i niefunkcjonalne, role i ich podział w zespole, użyte narzędzia oraz przebieg projektu iteracja po iteracji wraz z opisem artefaktów , które były wynikiem pracy podczas każdej iteracji.
+	\item dokumentacja użytkownika - opisuje sposób wykorzystania API naszej biblioteki. Od stworzenia grup zdarzeń, po ich ukrywanie, zaawansowane wyszukiwanie zdarzeń, obsługa eventów javascriptowych oraz korzystanie z pointera wskazującego.
+	\item dokumentacja techniczna - opisuje sposób realizacji projektu, wstęPny zaarys rozwiązania, model osi czasu, wybrane problemy i sposób ich rozwiązania oraz szczegółowo opisujearchitekturę aplikacji demonstracyjnej, użyte w niej rozwiązania oraz opis instalacji.
+\end{itemize}
+
+\subsection{Wnioski klienta}
+
+Po przedstawieniu końcowej wersji projektu klient był zadowolony z efektów pracy.
+Zostały zrealizowane wszystkie wymagania które stawiał przed projektem.
+Dodatkowo pokazanie na przykładzie w jaki sposób korzystać z widgetu oraz jak wcielić go do istniejącej aplikacji udowodniły, że jest to bardzo proste.
+
+\subsection{Propozycje rozwinięcia}
+
+W aktualnym stanie projektu rozwięniecie go jest bardzo prostym aspektem dzięki zastosowanym rozwiązaniom. Na przykłąd w przyszłości może zdarzyć się sytuacja, że będzie potrzeba rozszerzenia funkcjonalności tego projektu. Istnieją dwa sposoby rozszerzania modułów w JavaScript`cie. \\
+
+Pierwszym z nich jest zwykłe dodanie nowych metod do istaniejącego obiektu/klasy Timeline, a następnie przebudowanie projektu. Jest to opcja prostsza, ale jej nie polecamy, ze względu na utratę możliwości stworzenia kilku wersji rozszerzających nasz projekt.\\
+
+Rekomendowaną drogą postępowania jest użycie dziedziczenia w języku JavaScript.
+Jest ono realizowane poprzez przekopiowanie wszystkich metod i pól obiektu do nowego obiektu, a następnie dodanie do niego brakujących części. Używając requireJS i biblioteki Lo-Dash (http://lodash.com) jesteśmy w stanie to zrobić przy pomocy funkcji merge. \\
+
+Przykładowo rozszerzenie może wyglądać w taki sposób:
+
+\begin{lstlisting}
+var timelineWidgetClass = require('timeline');
+
+var extendedTimeline = _.merge(timelineWidgetClass, {
+	newFunction : function() {
+		doSomethingFancyHere();
+	},
+	newIntProperty : 100
+});
+\end{lstlisting}
+
+
+Po wykonaniu powyższego kodu zmienna extendedTimeline będzie zawierała wszystkie pola i metody klasy timeline zrealizowanej w naszym projekcie oraz funkcję newFunction oraz pole newIntProperty.\\
+
+Przykładami rozwinięć funkcjonalnych mogą być na przykład:
+\begin{itemize}
+	\item eksport danych do danego formatu, np: JSON
+	\item śledzenie wszystkich zajść w widgecie dzięki zastosowaniu systemu notyfikacji. Dzięki temu mogilbyśmy na przykład anulować którąś operację w prosty sposób ( na przykład dodanie pojedyńczego zdarzenia lub całej grupy, albo przesunięcie osi czasu na dany okres).
+	\item możliwość dodania zdjęcia lub filmu do dowolnego zdarzenia, co zwiększyło by atrakcyjność strony na której nasz widget byłby zastosowany oraz dałoby nowe możliwości użytkownikom.
+	\item dodanie dodatkowych opcji do wyszukiwania, co byłoby proste w realizacji dzięki zastosowaniu opcjonalnego obiektu przechowującego konfigurację wyszukiwania wykorzystywanego podczas wyszukiwania konkretnych zdarzeń
+\end{itemize}
+
+Jak widać możliwości rozwoju naszego projektu są bardzo duże.
+
+
 
 % o ile to mozliwe prosze uzywac odwolan \cite w konkretnych miejscach a nie \nocite
 
