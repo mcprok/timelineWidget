@@ -7,13 +7,13 @@
         <title>@title</title>
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
-        <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.at("javascripts/bootstrap/bootstrap.min.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.at("javascripts/bootstrap/bootstrap-timepicker.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.at("javascripts/bootstrap/bootstrap-datepicker.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.at("javascripts/datejs/date.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.at("javascripts/timeline/timeline.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.at("javascripts/lodash.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/libs/jquery-1.9.0.min.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/libs/bootstrap/bootstrap.min.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/libs/bootstrap/bootstrap-timepicker.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/libs/bootstrap/bootstrap-datepicker.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/libs/datejs/date.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/libs/timeline/timeline.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/libs/lodash.js")" type="text/javascript"></script>
         <script src="@routes.Assets.at("javascripts/commons/date.js")" type="text/javascript"></script>
     </head>
     <body style="background-color: #000;">
@@ -81,14 +81,13 @@
             <div class="row">
                 <div class="col-lg-12 ">
                     <h2>Timelines</h2>
-                    <button class="js-pointer-show">Show pointer</button>
-                    <button class="js-pointer-hide" style="display: none;">Hide pointer</button>
 
-                    <div>
-                        <button id="stupidHide">hide</button>
-                        <button id="stupidShow">Show</button>
-                    </div>
+                    <label for="groupHideShow">Grupa:</label> <select id="groupHideShow"></select>
+                    <button id="groupShowButton">Show</button>
+                    <button id="groupHideButton">Hide</button>
+                    <button id="groupDeleteButton">Delete</button>
                     <div id="timeline">You have no timelines loaded.</div>
+
                 </div>
             </div>
         </section>
@@ -174,28 +173,36 @@
     $(function() {
         require(['timeline/timelineService','forms/loadEventsForm','forms/newEventForm', 'switcher'],
         function(timelineService, loadEventsForm, newEventForm, switcher) {
-
-            $('#stupidHide' ).on('click', function ( ) {
-                timelineService.hideGroup("12");
-            });
-
-            $('#stupidShow' ).on('click', function ( ) {
-                timelineService.showGroup("12");
-            });
-
             switcher.init();
-
             loadEventsForm.init();
 
-            var onNewEventAdded = function(newEvent) {
-                timelineService.addNewEvent(newEvent);
+            $('#groupHideButton').on('click', function() {
+                var timeline = timelineService.getTimeline('timeline');
+                if ( timeline != null) {
+                    var $groupChoosen = $('#groupHideShow').find("option:selected");
+                    timeline.hideGroup($($groupChoosen ).html());
+                }
+            });
 
-            };
+            $('#groupShowButton').on('click', function() {
+                var timeline = timelineService.getTimeline('timeline');
+                if ( timeline != null) {
+                    var $groupChoosen = $('#groupHideShow').find("option:selected");
+                    timeline.showGroup($($groupChoosen ).html());
+                }
+            });
 
-            newEventForm.addNewEventSubmitHandler(onNewEventAdded);
-
+            $('#groupDeleteButton').on('click', function() {
+                var timeline = timelineService.getTimeline('timeline');
+                if ( timeline != null) {
+                    var $groupChoosen = $('#groupHideShow').find("option:selected");
+                    timeline.deleteGroup($($groupChoosen ).html());
+                }
+            });
         });
     });
+
+
 
     </script>
 </html>

@@ -3,7 +3,11 @@ define('forms/loadEventsForm', function (require) {
     var timelineService = require('../timeline/timelineService');
     var viewSwitcher = require('../switcher');
 
-    var init = function() {
+    var newEventForm = require('forms/newEventForm');
+    var selectionService = require('timeline/selectionService');
+    var timeline = null;
+
+    var init = function () {
         viewSwitcher.init();
         $('#eventsLoadingForm').on('submit', function (e) {
             e.preventDefault();
@@ -18,17 +22,16 @@ define('forms/loadEventsForm', function (require) {
                 contentType: false,
                 processData: false
             }).done(function (data) {
+                var preparedData = prepareEventData($.parseJSON(data).events);
+                var group = $('#fileUploadGroup').val();
 
-                    var preparedData = prepareEventData($.parseJSON(data).events);
-                    var group = $('#fileUploadGroup').val();
+                addNewTimeline(preparedData, group);
+            }).fail(function (jqXHR, status, errorThrown) {
 
-                    addNewTimeline(preparedData, group);
-                }).fail(function (jqXHR, status, errorThrown) {
-
-                    console.log(errorThrown);
-                    console.log(jqXHR.responseText);
-                    console.log(jqXHR.status);
-                });
+                console.log(errorThrown);
+                console.log(jqXHR.responseText);
+                console.log(jqXHR.status);
+            });
         });
     };
 
@@ -49,13 +52,9 @@ define('forms/loadEventsForm', function (require) {
     };
 
 
-    var addNewTimeline = function(data, groupName) {
-        if ( !timelineService.canCreateGroup(groupName) ) {
-            console.error('Cannot create a group - already exists: '+ groupName);
-            return;
-        }
+    var addNewTimeline = function (data, groupName) {
 
-        data.forEach(function(event) {
+        data.forEach(function (event) {
             event.group = groupName;
         });
 
@@ -73,9 +72,31 @@ define('forms/loadEventsForm', function (require) {
 
         viewSwitcher.switchView($("#timelinesWrapper"));
 
-        timeline = timelineService.createTimeline('timeline', data, options);
+        if (timeline == null) {
+            timeline = timelineService.createTimeline('timeline', options);
+            timeline.onGroupCreated(function (groupName, $group, $container) {
+                $('#groupSelect').append('<option value="">' + groupName + '</option>');
+                $('#searchGroupSelect').append('<option value="">' + groupName + '</option>');
+                $('#groupHideShow').append('<option value="">' + groupName + '</option>')
+//                console.log($container);
+//                var containerLeftPart = $container.find('.timeline-groups-axis > .timeline-axis-grid')[0];
+//                console.log(containerLeftPart);
+//                containerLeftPart.append('asdasdasdasd') //  TODO
+            });
+
+            var newEventCallback = function (event, groupName) {
+                viewSwitcher.switchView($("#timelinesWrapper"));
+                timeline.addEvent(event, groupName);
+            };
+
+            newEventForm.addNewEventSubmitHandler(newEventCallback)
+        }
 
 
+        timeline.createGroup(groupName, data);
+        timeline.addEventHandler('select', function () {
+            selectionService.selectCallback(timeline);
+        }, groupName);
     };
 
     return {

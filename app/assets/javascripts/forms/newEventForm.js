@@ -1,22 +1,10 @@
-define('forms/newEventForm', function () {
+define('forms/newEventForm', function(require) {
 
-    var getDateFromInputs = function (datepickerId, timepickerId) {
 
-        var datepickerValue = $('#' + datepickerId).datepicker('getDate');
-        var timepickerValue = $('#' + timepickerId).data("timepicker").getTime().split(':');
-        var newEventTimeHours = parseInt(timepickerValue[0]);
-        var newEventTimeMinutes = parseInt(timepickerValue[1]);
-        datepickerValue.set({
-            minute: newEventTimeMinutes,
-            hour: newEventTimeHours
-        });
-        return datepickerValue;
-    };
 
     var addNewEventSubmitHandler = function (callback) {
         $('#addEventForm').on('submit', function (e) {
             e.preventDefault();
-
             var newEventStartDate = getDateFromInputs('newEventStartDate', 'newEventStartTime');
 
             var selectedGroup = $("#groupSelect").find("option:selected").html();
@@ -33,21 +21,13 @@ define('forms/newEventForm', function () {
             }
 
             if (callback) {
-                callback(newEvent);
+                callback(newEvent, selectedGroup);
             }
         });
     };
 
-    var updateGroups = function(newGroups) {
-        $("#groupSelect").html("");
-        $(newGroups).each(function (i) {
-            $("#groupSelect").append("<option value=\""+newGroups[i].value+"\">"+newGroups[i].content+"</option>");
-        });
-    };
-
     return {
-        addNewEventSubmitHandler: addNewEventSubmitHandler,
-        updateGroups: updateGroups
+        addNewEventSubmitHandler: addNewEventSubmitHandler
     };
 
 });

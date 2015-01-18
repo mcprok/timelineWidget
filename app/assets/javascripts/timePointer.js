@@ -10,9 +10,7 @@ define('timePointer', function (require) {
         this.$pointer = $('<div class="pointer" style="height:100%; width:1px; background: #e00; display: block; position: absolute;left: 0px;"></div>');
         this.initialized = false;
         this.currentlyVisibleItems = {};
-        this.pointerEnabled = false;
-
-        $(this.container).find('.timeline-content').append(this.$pointer);
+       $(this.container).find('.timeline-content').append(this.$pointer);
 
         this.getCurrentlyVisibleItems = function () {
             if (this._isResized()) {
@@ -100,6 +98,7 @@ define('timePointer', function (require) {
             });
         };
 
+
         var self = this;
 
         this.highlightCurrentElements = function(offset, containerSize) {
@@ -123,78 +122,6 @@ define('timePointer', function (require) {
             });
 
         };
-        this.disablePointer = function (byClick) {
-            $('.pointer').hide();
-            $('body').undelegate('.timeline-frame', 'mousemove', self._updatePointerState);
-            if (byClick) {
-                pointerEnabled = false;
-            }
-        };
-
-        this.enablePointer = function (byClick) {
-            $('.pointer').show();
-            $('body').delegate('.timeline-frame', 'mousemove', self._updatePointerState);
-            if (byClick) {
-                pointerEnabled = true;
-            }
-        };
-
-        this._updatePointerState = function (e) {
-
-            if(self._isResized()) {
-                self._onResizeAction();
-            }
-
-            var $timelineFrame = $('.timeline-frame');
-            var boundingBox = $timelineFrame.get(0).getBoundingClientRect().left;
-            var groupWidth = $('.timeline-groups-axis').width();
-
-            var leftValue = e.pageX - (boundingBox + groupWidth);
-            $('.pointer').css('left', leftValue);
-
-            $('.highlight').removeClass('highlight');
-
-            _.each(self.currentlyVisibleItems.items[leftValue], function (itemIndex) {
-                $(self.timeline.items[itemIndex].dom).addClass('highlight');
-            });
-
-            _.each(self.currentlyVisibleItems.clusters[leftValue], function (itemIndex) {
-                $(self.timeline.clusters[itemIndex].dom).addClass('highlight');
-            });
-
-        };
-
-        $('.js-pointer-show').on('click', function (e) {
-
-            self.enablePointer(true);
-            $(e.currentTarget).hide();
-            $('.js-pointer-hide').show();
-        });
-
-        $('.js-pointer-hide').on('click', function (e) {
-            self.disablePointer(true);
-            $(e.currentTarget).hide();
-            $('.js-pointer-show').show();
-        });
-
-
-        var $timelineContent = $('.timeline-content');
-        var scrollTimeout = null;
-
-        $timelineContent.on('mousewheel', function () {
-
-            if (pointerEnabled) {
-                if (scrollTimeout) {
-                    clearTimeout(scrollTimeout);
-                }
-
-                self.disablePointer(false);
-                scrollTimeout = setTimeout(function () {
-                    self.enablePointer(false);
-                }, 500);
-            }
-        });
-
 
     }
 

@@ -1,8 +1,8 @@
 requirejs.config({
 
-    baseUrl: '/assets/javascripts/',
-    paths: {
-        tpl: 'tpl'
-    }
+    baseUrl: 'assets/javascripts/'
+
 
 });
+
+requirejs(['timeline/timelineService']);

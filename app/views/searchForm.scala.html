@@ -1,35 +1,120 @@
 <form id="searchForm" role="form" >
     <label for="searchInput">Search:</label>
     <input type="text" class="form-control" id="searchInput" placeholder="Enter search string">
+    <label for="searchGroupSelect">Grupa:</label>
+    <div>
+        <select multiple class="form-control" id="searchGroupSelect">
+            <option value="0" selected="selected">--ALL--</option>
+        </select>
+    </div>
+    <div>
+        <input type="checkbox" id="searchStartDateOn"/>
+        <label for="searchStartDateDiv">Event start date</label>
+        <div id="searchStartDateDiv">
+            @datepicker("searchStartDate")
+            @timepicker("searchStartTime")
+        </div>
+    </div>
+    <div>
+        <input type="checkbox" id="searchEndDateOn"/>
+        <label for="searchEndDateDiv">Event End date</label>
+        <div id="searchEndDateDiv">
+            @datepicker("searchEndDate")
+            @timepicker("searchEndTime")
+        </div>
+    </div>
     <button class="btn btn-default" type="submit" id="searchAction">Search for events</button>
 </form>
 
 
 <script type="text/javascript">
+
+
 $(function() {
-    require(['timeline/timelineService'], function(timelineService) {
+    $('#searchStartDateOn').change(function (event) {
+        if(event.currentTarget.checked) {
+            $('#searchStartDateDiv').show();
+        } else {
+            $('#searchStartDateDiv').hide();
+        }
+    });
+    $('#searchStartDateDiv').hide();
+
+    $('#searchEndDateOn').change(function (event) {
+        if(event.currentTarget.checked) {
+            $('#searchEndDateDiv').show();
+        } else {
+            $('#searchEndDateDiv').hide();
+        }
+    });
+    $('#searchEndDateDiv').hide();
+
+    require(['timeline/timelineService', 'switcher'], function(timelineService, switcher) {
 
         $('#searchAction').on('click', function(e) {
             e.preventDefault();
-            var searchString = $('#searchInput' ).val();
+            var searchString = $('#searchInput').val();
+            var $groupsChoosen = $('#searchGroupSelect').find("option:selected");
+            var searchGroupsNames = [];
+            _.forEach($groupsChoosen, function(option) {
+               searchGroupsNames.push($(option).html())
+            });
 
-            var searchResults = timelineService.search(searchString);
+            var searchResults = searchForResults(timelineService, searchString, searchGroupsNames);
+
             var $searchResults = $('#searchResults');
             $searchResults.find("tbody").html("");
 
             _.each(searchResults, function(item) {
-                var itemStartDate = createCellString(formatedString(item.start));
-                var itemEndDate = createCellString(formatedString(item.end));
+                var itemStartDate = createCellString(formattedString(item.start));
+                var itemEndDate = createCellString(formattedString(item.end));
                 var itemGroup = createCellString(item.group.content);
                 var itemContent = createCellString(item.content);
-                var tableRow = $('<tr>' + itemContent + itemStartDate +itemEndDate+ itemGroup+$('</tr>'));
+
+				var goToEventLink = '<td><a class="js-gotoevent" href="#" data-groupName="' + item.group.content + '" data-start="' + item.start + '" + data-end="' + item.end + '">Go to event on timeline</a></td>';
+
+                var tableRow = $('<tr>' + itemContent + itemStartDate +itemEndDate+ itemGroup + goToEventLink + '</tr>');
                 $searchResults.append(tableRow);
             });
         });
+
+		$('body' ).delegate('.js-gotoevent', 'click', function(event) {
+			switcher.switchView($("#timelinesWrapper"));
+			var item = $(event.currentTarget);
+			var start = item.data('start');
+			var end = item.data('end');
+			var groupName = item.data('groupname');
+			console.log(groupName);
+			var timeline = timelineService.getTimeline('timeline');
+			timeline.$timeline.setVisibleChartRange(start, end);
+
+
+		});
+
     });
 
     var createCellString = function(content) {
         return '<td>'+content+'</td>';
     }
 });
+
+var searchForResults = function(timelineService, searchString, searchGroupsNames) {
+    var searchResults;
+    var options = {};
+    if ( $('#searchStartDateDiv').is(":visible") ) {
+        options["after"] = getDateFromInputs('searchStartDate','searchStartTime');
+    }
+
+    if ( $('#searchEndDateDiv').is(":visible") ) {
+        options["before"] = getDateFromInputs('searchEndDate','searchEndTime');
+    }
+
+    if (_.contains(searchGroupsNames,'--ALL--')) {
+        searchResults = timelineService.getTimeline('timeline').search(searchString, options);
+    } else {
+        options['groups'] = searchGroupsNames;
+        searchResults = timelineService.getTimeline('timeline').search(searchString, options);
+    }
+    return searchResults;
+};
 </script>
